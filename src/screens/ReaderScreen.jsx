@@ -44,7 +44,7 @@ function paginateText(text) {
   return pages
 }
 
-export default function ReaderScreen({ book, navigate }) {
+export default function ReaderScreen({ book, navigate, globalTheme }) {
   const [pages, setPages] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -56,7 +56,7 @@ export default function ReaderScreen({ book, navigate }) {
   const [searchResult, setSearchResult] = useState(null)
   const [animDir, setAnimDir] = useState(null)
   const [animating, setAnimating] = useState(false)
-  const [theme, setTheme] = useState('night')
+  const [theme, setTheme] = useState(globalTheme || 'night')
   const [fontSize, setFontSize] = useState(17)
   const [brightness, setBrightness] = useState(100)
   const touchStartX = useRef(null)
@@ -75,8 +75,7 @@ export default function ReaderScreen({ book, navigate }) {
   const fetchBook = async () => {
     try {
       setLoading(true)
-      const url = `https://www.gutenberg.org/cache/epub/${book.gutenbergId}/pg${book.gutenbergId}.txt`
-      const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`)
+      const res = await fetch(`/api/book?id=${book.gutenbergId}`)
       if (!res.ok) throw new Error()
       const raw = await res.text()
       const start = raw.indexOf('*** START OF')
@@ -151,10 +150,8 @@ export default function ReaderScreen({ book, navigate }) {
 
   return (
     <div style={{
-      minHeight: '100vh',
-      background: t.bg,
-      position: 'relative',
-      overflow: 'hidden',
+      minHeight: '100vh', background: t.bg,
+      position: 'relative', overflow: 'hidden',
       filter: `brightness(${brightness}%)`
     }}>
 
@@ -162,28 +159,20 @@ export default function ReaderScreen({ book, navigate }) {
       {showUI && (
         <div style={{
           position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
-          width: '100%', maxWidth: 430,
-          padding: '48px 20px 12px',
-          background: theme === 'night'
-            ? 'linear-gradient(var(--bg) 70%, transparent)'
-            : `linear-gradient(${t.bg} 70%, transparent)`,
-          zIndex: 10,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', maxWidth: 430, padding: '48px 20px 12px',
+          background: `linear-gradient(${t.bg} 70%, transparent)`,
+          zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           filter: `brightness(${100 / brightness * 100}%)`
         }}>
           <button onClick={() => navigate('table')} style={{
-            background: 'none', border: 'none',
-            color: '#C9A96E', fontSize: 14, cursor: 'pointer',
-            fontFamily: 'var(--font-ui)'
+            background: 'none', border: 'none', color: '#C9A96E',
+            fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-ui)'
           }}>← Back</button>
-
           <p style={{
-            fontFamily: 'var(--font-display)', fontSize: 13,
-            color: t.ui, margin: 0, fontStyle: 'italic',
-            maxWidth: 160, textAlign: 'center',
+            fontFamily: 'var(--font-display)', fontSize: 13, color: t.ui,
+            margin: 0, fontStyle: 'italic', maxWidth: 160, textAlign: 'center',
             overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'
           }}>{book.title}</p>
-
           <div style={{ display: 'flex', gap: 12 }}>
             <button onClick={(e) => { e.stopPropagation(); setShowSearch(!showSearch); setShowSettings(false) }} style={{
               background: 'none', border: 'none', color: t.ui, fontSize: 16, cursor: 'pointer'
@@ -201,8 +190,7 @@ export default function ReaderScreen({ book, navigate }) {
           position: 'fixed', top: 110, left: '50%', transform: 'translateX(-50%)',
           width: '90%', maxWidth: 390, zIndex: 20,
           background: theme === 'night' ? '#1A1410' : t.bg,
-          border: `1px solid ${t.border}`,
-          borderRadius: 14, padding: 16,
+          border: `1px solid ${t.border}`, borderRadius: 14, padding: 16,
           boxShadow: '0 20px 60px rgba(0,0,0,0.4)'
         }}>
           <input
@@ -224,8 +212,7 @@ export default function ReaderScreen({ book, navigate }) {
             )}
             <button onClick={handleSearch} style={{
               marginLeft: 'auto', background: '#1a6bff', border: 'none',
-              borderRadius: 8, padding: '8px 16px', color: '#fff',
-              fontSize: 13, cursor: 'pointer'
+              borderRadius: 8, padding: '8px 16px', color: '#fff', fontSize: 13, cursor: 'pointer'
             }}>Search</button>
           </div>
         </div>
@@ -237,11 +224,9 @@ export default function ReaderScreen({ book, navigate }) {
           position: 'fixed', top: 110, left: '50%', transform: 'translateX(-50%)',
           width: '90%', maxWidth: 390, zIndex: 20,
           background: theme === 'night' ? '#1A1410' : t.bg,
-          border: `1px solid ${t.border}`,
-          borderRadius: 16, padding: 20,
+          border: `1px solid ${t.border}`, borderRadius: 16, padding: 20,
           boxShadow: '0 20px 60px rgba(0,0,0,0.4)'
         }}>
-          {/* Theme */}
           <p style={{ fontSize: 10, color: '#C9A96E', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12, fontFamily: 'var(--font-ui)' }}>Reading Mode</p>
           <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
             {Object.entries(THEMES).map(([key, val]) => (
@@ -256,7 +241,6 @@ export default function ReaderScreen({ book, navigate }) {
             ))}
           </div>
 
-          {/* Font Size */}
           <p style={{ fontSize: 10, color: '#C9A96E', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12, fontFamily: 'var(--font-ui)' }}>Font Size</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
             <button onClick={() => setFontSize(f => Math.max(13, f - 1))} style={{
@@ -277,15 +261,12 @@ export default function ReaderScreen({ book, navigate }) {
             <span style={{ fontSize: 12, color: t.ui, fontFamily: 'var(--font-ui)', minWidth: 30 }}>{fontSize}px</span>
           </div>
 
-          {/* Brightness */}
           <p style={{ fontSize: 10, color: '#C9A96E', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12, fontFamily: 'var(--font-ui)' }}>Brightness</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ fontSize: 14 }}>🌑</span>
-            <input
-              type="range" min="40" max="100" value={brightness}
+            <input type="range" min="40" max="100" value={brightness}
               onChange={e => setBrightness(Number(e.target.value))}
-              style={{ flex: 1, accentColor: '#C9A96E' }}
-            />
+              style={{ flex: 1, accentColor: '#C9A96E' }} />
             <span style={{ fontSize: 14 }}>☀️</span>
           </div>
         </div>
@@ -326,14 +307,9 @@ export default function ReaderScreen({ book, navigate }) {
         {!loading && !error && !expired && pages.length > 0 && (
           <div style={{
             ...getPageStyle(),
-            fontSize: fontSize,
-            lineHeight: 1.95,
-            color: t.text,
-            fontFamily: 'var(--font-body)',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
+            fontSize: fontSize, lineHeight: 1.95, color: t.text,
+            fontFamily: 'var(--font-body)', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
           }}>
-            {/* Drop Cap first letter */}
             {pages[currentPage]}
           </div>
         )}
@@ -343,47 +319,32 @@ export default function ReaderScreen({ book, navigate }) {
       {showUI && !loading && !error && pages.length > 0 && (
         <div style={{
           position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-          width: '100%', maxWidth: 430,
-          padding: '16px 24px 32px',
-          background: theme === 'night'
-            ? 'linear-gradient(transparent, #0F0C09 40%)'
-            : `linear-gradient(transparent, ${t.bg} 40%)`,
-          zIndex: 10,
-          filter: `brightness(${100 / brightness * 100}%)`
+          width: '100%', maxWidth: 430, padding: '16px 24px 32px',
+          background: `linear-gradient(transparent, ${t.bg} 40%)`,
+          zIndex: 10, filter: `brightness(${100 / brightness * 100}%)`
         }}>
-          {/* Progress */}
           <div style={{ height: 1, background: t.border, borderRadius: 1, marginBottom: 16 }}>
-            <div style={{
-              height: '100%', width: `${progress}%`,
-              background: '#C9A96E', borderRadius: 1, transition: 'width 0.3s'
-            }} />
+            <div style={{ height: '100%', width: `${progress}%`, background: '#C9A96E', borderRadius: 1, transition: 'width 0.3s' }} />
           </div>
-
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button
               onClick={(e) => { e.stopPropagation(); goToPage('prev') }}
               disabled={currentPage === 0}
               style={{
-                background: 'none',
-                border: `1px solid ${t.border}`,
-                borderRadius: 10, padding: '10px 20px',
-                color: currentPage === 0 ? t.border : t.text,
+                background: 'none', border: `1px solid ${t.border}`, borderRadius: 10,
+                padding: '10px 20px', color: currentPage === 0 ? t.border : t.text,
                 fontSize: 13, cursor: currentPage === 0 ? 'default' : 'pointer',
                 fontFamily: 'var(--font-ui)'
               }}>← Prev</button>
-
             <p style={{ fontSize: 11, color: t.ui, margin: 0, fontFamily: 'var(--font-ui)' }}>
               {currentPage + 1} / {pages.length} · {progress}%
             </p>
-
             <button
               onClick={(e) => { e.stopPropagation(); goToPage('next') }}
               disabled={currentPage === pages.length - 1}
               style={{
-                background: 'none',
-                border: `1px solid ${t.border}`,
-                borderRadius: 10, padding: '10px 20px',
-                color: currentPage === pages.length - 1 ? t.border : t.text,
+                background: 'none', border: `1px solid ${t.border}`, borderRadius: 10,
+                padding: '10px 20px', color: currentPage === pages.length - 1 ? t.border : t.text,
                 fontSize: 13, cursor: currentPage === pages.length - 1 ? 'default' : 'pointer',
                 fontFamily: 'var(--font-ui)'
               }}>Next →</button>
