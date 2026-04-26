@@ -278,9 +278,11 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
             background: currentTheme === 'night' ? '#1A1410' : theme.bg,
             border: `1px solid ${theme.border}`,
             borderRadius: '24px 24px 0 0',
-            padding: '0 0 40px',
+            padding: '0 0 120px',
             boxShadow: '0 -20px 60px rgba(0,0,0,0.6)',
-            animation: 'slideUp 0.3s ease'
+            animation: 'slideUp 0.3s ease',
+            maxHeight: '85vh',
+            overflowY: 'auto'
           }}>
             <div style={{
               width: 40, height: 4, background: theme.border,
@@ -294,7 +296,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                 style={{
                   width: 90, height: 135, objectFit: 'cover',
                   borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                  border: `1px solid ${theme.border}`
+                  border: `1px solid ${theme.border}`, flexShrink: 0
                 }}
               />
               <div style={{ flex: 1 }}>
