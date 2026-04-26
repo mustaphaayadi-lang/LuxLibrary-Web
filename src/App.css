@@ -1,0 +1,46 @@
+import { useState } from 'react'
+import EntranceScreen from './screens/EntranceScreen'
+import BookCardScreen from './screens/BookCardScreen'
+import TableScreen from './screens/TableScreen'
+import './index.css'
+
+export default function App() {
+  const [screen, setScreen] = useState('entrance')
+  const [selectedBook, setSelectedBook] = useState(null)
+
+  const navigate = (to, params = {}) => {
+    if (params.book) setSelectedBook(params.book)
+    setScreen(to)
+  }
+
+  return (
+    <div style={{ maxWidth: 430, margin: '0 auto', minHeight: '100vh', background: '#0d0a08', position: 'relative' }}>
+      {screen === 'entrance' && <EntranceScreen navigate={navigate} />}
+      {screen === 'bookcard' && <BookCardScreen navigate={navigate} book={selectedBook} />}
+      {screen === 'table' && <TableScreen navigate={navigate} />}
+
+      {/* Bottom Tab Bar */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: 430, display: 'flex',
+        backgroundColor: '#0d0a08', borderTop: '1px solid rgba(255,255,255,0.08)',
+        padding: '10px 0 20px',
+      }}>
+        <button onClick={() => navigate('entrance')} style={{
+          flex: 1, background: 'none', border: 'none', cursor: 'pointer',
+          color: screen === 'entrance' ? '#c9a96e' : 'rgba(255,255,255,0.3)',
+          fontSize: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4
+        }}>
+          <span style={{ fontSize: 20 }}>📖</span> Library
+        </button>
+        <button onClick={() => navigate('table')} style={{
+          flex: 1, background: 'none', border: 'none', cursor: 'pointer',
+          color: screen === 'table' ? '#c9a96e' : 'rgba(255,255,255,0.3)',
+          fontSize: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4
+        }}>
+          <span style={{ fontSize: 20 }}>🪑</span> My Table
+        </button>
+      </div>
+    </div>
+  )
+}
