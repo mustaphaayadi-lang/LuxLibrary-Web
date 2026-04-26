@@ -8,7 +8,6 @@ const THEMES = {
     text: 'rgba(237, 232, 223, 0.85)',
     ui: 'rgba(237, 232, 223, 0.4)',
     border: 'rgba(255,235,200,0.08)',
-    navBg: 'rgba(15,12,9,0.95)',
     label: '🌙 Night',
   },
   paper: {
@@ -16,7 +15,6 @@ const THEMES = {
     text: '#2C2416',
     ui: '#8B7355',
     border: 'rgba(44,36,22,0.1)',
-    navBg: 'rgba(245,240,232,0.95)',
     label: '📄 Paper',
   },
   day: {
@@ -24,7 +22,6 @@ const THEMES = {
     text: '#1A1A1A',
     ui: '#888888',
     border: 'rgba(0,0,0,0.08)',
-    navBg: 'rgba(255,255,255,0.95)',
     label: '☀️ Day',
   },
 }
@@ -42,6 +39,30 @@ function paginateText(text) {
     i = end
   }
   return pages
+}
+
+function cleanText(raw) {
+  // Remove Gutenberg header/footer
+  const start = raw.indexOf('*** START OF')
+  const end = raw.indexOf('*** END OF')
+  let cleaned = start !== -1 && end !== -1
+    ? raw.slice(raw.indexOf('\n', start) + 1, end).trim()
+    : raw.trim()
+
+  // Skip to Chapter 1
+  const chapterMarkers = [
+    'Chapter I\n', 'CHAPTER I\n', 'Chapter 1\n', 'CHAPTER 1\n',
+    'CHAPTER ONE\n', 'Chapter One\n', 'PART I\n', 'Part I\n',
+    'Chapter I\r', 'CHAPTER I\r', 'I.\n\n', 'CHAPTER I.',
+  ]
+  for (const marker of chapterMarkers) {
+    const chapterStart = cleaned.indexOf(marker)
+    if (chapterStart !== -1) {
+      cleaned = cleaned.slice(chapterStart).trim()
+      break
+    }
+  }
+  return cleaned
 }
 
 export default function ReaderScreen({ book, navigate, globalTheme }) {
@@ -78,11 +99,7 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
       const res = await fetch(book.textUrl)
       if (!res.ok) throw new Error()
       const raw = await res.text()
-      const start = raw.indexOf('*** START OF')
-      const end = raw.indexOf('*** END OF')
-      const cleaned = start !== -1 && end !== -1
-        ? raw.slice(raw.indexOf('\n', start) + 1, end).trim()
-        : raw.trim()
+      const cleaned = cleanText(raw)
       const paginated = paginateText(cleaned)
       setPages(paginated)
       const saved = JSON.parse(localStorage.getItem(`book_${book.id}`) || '{}')
