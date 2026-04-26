@@ -75,7 +75,7 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
   const fetchBook = async () => {
     try {
       setLoading(true)
-      const res = await fetch(`/api/book?id=${book.gutenbergId}`)
+      const res = await fetch(book.textUrl)
       if (!res.ok) throw new Error()
       const raw = await res.text()
       const start = raw.indexOf('*** START OF')
@@ -155,7 +155,6 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
       filter: `brightness(${brightness}%)`
     }}>
 
-      {/* Top Bar */}
       {showUI && (
         <div style={{
           position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
@@ -184,7 +183,6 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         </div>
       )}
 
-      {/* Search Panel */}
       {showSearch && (
         <div style={{
           position: 'fixed', top: 110, left: '50%', transform: 'translateX(-50%)',
@@ -218,7 +216,6 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         </div>
       )}
 
-      {/* Settings Panel */}
       {showSettings && (
         <div style={{
           position: 'fixed', top: 110, left: '50%', transform: 'translateX(-50%)',
@@ -272,7 +269,6 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         </div>
       )}
 
-      {/* Page Content */}
       <div
         ref={contentRef}
         onTouchStart={handleTouchStart}
@@ -315,7 +311,6 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         )}
       </div>
 
-      {/* Bottom Bar */}
       {showUI && !loading && !error && pages.length > 0 && (
         <div style={{
           position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
