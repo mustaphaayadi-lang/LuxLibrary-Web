@@ -12,7 +12,13 @@ export default async function handler(req) {
 
   try {
     const url = `https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'text/plain',
+        'Accept-Encoding': 'identity',
+        'User-Agent': 'LuxLibrary/1.0'
+      }
+    })
 
     if (!response.ok) {
       return new Response(JSON.stringify({ error: 'Failed to fetch book' }), { status: 500 })
@@ -23,7 +29,7 @@ export default async function handler(req) {
       status: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'text/plain',
+        'Content-Type': 'text/plain; charset=utf-8',
       },
     })
   } catch (error) {
