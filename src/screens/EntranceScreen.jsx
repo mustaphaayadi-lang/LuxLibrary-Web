@@ -77,6 +77,9 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
   const [savedBooks, setSavedBooks] = useState(
     JSON.parse(localStorage.getItem('lux_read_later') || '[]')
   )
+  const [sheetY, setSheetY] = useState(0)
+  const sheetTouchStart = useRef(null)
+  const sheetRef = useRef(null)
 
   const hero = books[0]
 
@@ -87,7 +90,10 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
       )
     : null
 
-  const handleBookClick = (book) => setSelectedBook(book)
+  const handleBookClick = (book) => {
+    setSheetY(0)
+    setSelectedBook(book)
+  }
   const closeSheet = () => setSelectedBook(null)
 
   const toggleReadLater = (bookId) => {
@@ -100,6 +106,25 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
   }
 
   const isBookSaved = (bookId) => savedBooks.includes(bookId)
+
+  const handleSheetTouchStart = (e) => {
+    sheetTouchStart.current = e.touches[0].clientY
+  }
+
+  const handleSheetTouchMove = (e) => {
+    if (sheetTouchStart.current === null) return
+    const diff = e.touches[0].clientY - sheetTouchStart.current
+    if (diff > 0) setSheetY(diff)
+  }
+
+  const handleSheetTouchEnd = () => {
+    if (sheetY > 120) {
+      closeSheet()
+    } else {
+      setSheetY(0)
+    }
+    sheetTouchStart.current = null
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: theme.bg, paddingBottom: 100, position: 'relative', transition: 'background 0.3s' }}>
@@ -272,18 +297,28 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               zIndex: 60, backdropFilter: 'blur(4px)'
             }}
           />
-          <div style={{
-            position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            width: '100%', maxWidth: 430, zIndex: 70,
-            background: currentTheme === 'night' ? '#1A1410' : theme.bg,
-            border: `1px solid ${theme.border}`,
-            borderRadius: '24px 24px 0 0',
-            padding: '0 0 120px',
-            boxShadow: '0 -20px 60px rgba(0,0,0,0.6)',
-            animation: 'slideUp 0.3s ease',
-            maxHeight: '85vh',
-            overflowY: 'auto'
-          }}>
+
+          <div
+            ref={sheetRef}
+            onTouchStart={handleSheetTouchStart}
+            onTouchMove={handleSheetTouchMove}
+            onTouchEnd={handleSheetTouchEnd}
+            style={{
+              position: 'fixed', bottom: 0, left: '50%',
+              transform: `translateX(-50%) translateY(${sheetY}px)`,
+              width: '100%', maxWidth: 430, zIndex: 70,
+              background: currentTheme === 'night' ? '#1A1410' : theme.bg,
+              border: `1px solid ${theme.border}`,
+              borderRadius: '24px 24px 0 0',
+              padding: '0 0 120px',
+              boxShadow: '0 -20px 60px rgba(0,0,0,0.6)',
+              animation: sheetY === 0 ? 'slideUp 0.3s ease' : 'none',
+              maxHeight: '85vh',
+              overflowY: 'auto',
+              transition: sheetY === 0 ? 'transform 0.3s ease' : 'none'
+            }}>
+
+            {/* Drag Handle */}
             <div style={{
               width: 40, height: 4, background: theme.border,
               borderRadius: 2, margin: '12px auto 20px'
