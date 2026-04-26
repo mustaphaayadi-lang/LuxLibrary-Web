@@ -74,6 +74,9 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
   const [search, setSearch] = useState('')
   const [showSearch, setShowSearch] = useState(false)
   const [showThemePicker, setShowThemePicker] = useState(false)
+  const [savedBooks, setSavedBooks] = useState(
+    JSON.parse(localStorage.getItem('lux_read_later') || '[]')
+  )
 
   const hero = books[0]
 
@@ -86,6 +89,17 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
 
   const handleBookClick = (book) => setSelectedBook(book)
   const closeSheet = () => setSelectedBook(null)
+
+  const toggleReadLater = (bookId) => {
+    const saved = JSON.parse(localStorage.getItem('lux_read_later') || '[]')
+    const updated = saved.includes(bookId)
+      ? saved.filter(id => id !== bookId)
+      : [...saved, bookId]
+    localStorage.setItem('lux_read_later', JSON.stringify(updated))
+    setSavedBooks(updated)
+  }
+
+  const isBookSaved = (bookId) => savedBooks.includes(bookId)
 
   return (
     <div style={{ minHeight: '100vh', background: theme.bg, paddingBottom: 100, position: 'relative', transition: 'background 0.3s' }}>
@@ -105,7 +119,6 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
         }}>LuxLibrary</h1>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          {/* Theme Switcher */}
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => { setShowThemePicker(!showThemePicker); setShowSearch(false) }}
@@ -152,7 +165,6 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
             )}
           </div>
 
-          {/* Search */}
           <button onClick={() => { setShowSearch(!showSearch); setShowThemePicker(false) }} style={{
             background: 'none', border: 'none', cursor: 'pointer',
             color: showSearch ? '#C9A96E' : theme.textSecondary, fontSize: 20
@@ -204,7 +216,6 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
       {/* Main Content */}
       {!filtered && (
         <>
-          {/* Hero Banner */}
           <div style={{ height: 380, position: 'relative', overflow: 'hidden', marginBottom: 32 }}>
             <img
               src={hero.cover}
@@ -237,7 +248,6 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
             </div>
           </div>
 
-          {/* Shelves */}
           <div style={{ paddingTop: 8 }}>
             {SHELVES.map(shelf => (
               <Shelf
@@ -332,16 +342,31 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               ))}
             </div>
 
-            <div style={{ padding: '0 24px' }}>
+            <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button
                 onClick={() => { navigate('bookcard', { book: selectedBook }); closeSheet() }}
                 style={{
                   width: '100%', padding: '16px 0',
                   background: '#1a6bff', border: 'none', borderRadius: 14,
                   color: '#fff', fontSize: 16, fontWeight: 600,
-                  cursor: 'pointer', fontFamily: 'var(--font-ui)', marginBottom: 10,
+                  cursor: 'pointer', fontFamily: 'var(--font-ui)',
                   boxShadow: '0 8px 24px rgba(26,107,255,0.3)'
                 }}>Borrow for 21 Days</button>
+
+              <button
+                onClick={() => toggleReadLater(selectedBook.id)}
+                style={{
+                  width: '100%', padding: '14px 0',
+                  background: isBookSaved(selectedBook.id) ? 'rgba(201,169,110,0.12)' : 'none',
+                  border: `1px solid ${isBookSaved(selectedBook.id) ? '#C9A96E' : theme.border}`,
+                  borderRadius: 14,
+                  color: isBookSaved(selectedBook.id) ? '#C9A96E' : theme.textSecondary,
+                  fontSize: 14, fontWeight: 500,
+                  cursor: 'pointer', fontFamily: 'var(--font-ui)'
+                }}>
+                {isBookSaved(selectedBook.id) ? '🔖 Saved for Later' : '🔖 Save for Later'}
+              </button>
+
               <p style={{
                 textAlign: 'center', fontSize: 11,
                 color: theme.textMuted, fontFamily: 'var(--font-ui)'

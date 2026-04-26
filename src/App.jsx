@@ -4,6 +4,7 @@ import BookCardScreen from './screens/BookCardScreen'
 import TableScreen from './screens/TableScreen'
 import ReaderScreen from './screens/ReaderScreen'
 import OnboardingScreen from './screens/OnboardingScreen'
+import ReadLaterScreen from './screens/ReadLaterScreen'
 import './index.css'
 
 export const THEMES = {
@@ -63,15 +64,14 @@ export default function App() {
   return (
     <div style={{
       maxWidth: 430, margin: '0 auto',
-      minHeight: '100vh',
-      background: t.bg,
-      position: 'relative',
-      transition: 'background 0.3s'
+      minHeight: '100vh', background: t.bg,
+      position: 'relative', transition: 'background 0.3s'
     }}>
       {screen === 'onboarding' && <OnboardingScreen onFinish={handleOnboardingFinish} />}
       {screen === 'entrance' && <EntranceScreen navigate={navigate} theme={t} currentTheme={theme} changeTheme={changeTheme} />}
       {screen === 'bookcard' && <BookCardScreen navigate={navigate} book={selectedBook} theme={t} />}
       {screen === 'table' && <TableScreen navigate={navigate} theme={t} />}
+      {screen === 'readlater' && <ReadLaterScreen navigate={navigate} theme={t} />}
       {screen === 'reader' && <ReaderScreen navigate={navigate} book={selectedBook} globalTheme={theme} />}
 
       {!hideTab && (
@@ -90,6 +90,14 @@ export default function App() {
             alignItems: 'center', gap: 4, fontFamily: 'var(--font-ui)'
           }}>
             <span style={{ fontSize: 20 }}>📖</span>Library
+          </button>
+          <button onClick={() => navigate('readlater')} style={{
+            flex: 1, background: 'none', border: 'none', cursor: 'pointer',
+            color: screen === 'readlater' ? '#C9A96E' : t.textMuted,
+            fontSize: 11, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', gap: 4, fontFamily: 'var(--font-ui)'
+          }}>
+            <span style={{ fontSize: 20 }}>🔖</span>Read Later
           </button>
           <button onClick={() => navigate('table')} style={{
             flex: 1, background: 'none', border: 'none', cursor: 'pointer',
