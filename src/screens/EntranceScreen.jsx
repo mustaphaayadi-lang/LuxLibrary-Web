@@ -67,7 +67,7 @@ function Shelf({ labelKey, books, onBookClick, theme, lang }) {
     <div style={{ marginBottom: 36 }}>
       <p style={{
         fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 500,
-        color: '#C9A96E', letterSpacing: 2, textTransform: 'uppercase',
+        color: '#8B6F47', letterSpacing: 2, textTransform: 'uppercase',
         padding: '0 24px', marginBottom: 16
       }}>{t(lang, labelKey)}</p>
       <div style={{
@@ -161,14 +161,14 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
       <div style={{
         position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: 430, zIndex: 50,
-        padding: '48px 24px 16px',
+        padding: '12px 24px 8px',
         background: 'linear-gradient(' + theme.bg + ' 60%, transparent)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         transition: 'background 0.3s'
       }}>
         <h1 style={{
           fontFamily: 'var(--font-display)', fontSize: 24,
-          color: '#C9A96E', letterSpacing: 1, fontWeight: 600
+          color: '#8B6F47', letterSpacing: 1, fontWeight: 600
         }}>LuxLibrary</h1>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -210,7 +210,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                     <span style={{ fontSize: 18 }}>{opt.icon}</span>
                     <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13 }}>{t(lang, opt.key)}</span>
                     {currentTheme === opt.key && (
-                      <span style={{ marginLeft: 'auto', color: '#C9A96E', fontSize: 12 }}>✓</span>
+                      <span style={{ marginLeft: 'auto', color: '#8B6F47', fontSize: 12 }}>✓</span>
                     )}
                   </button>
                 ))}
@@ -253,7 +253,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
       {filtered && (
         <div style={{ padding: '160px 24px 0' }}>
           <p style={{
-            fontFamily: 'var(--font-ui)', fontSize: 11, color: '#C9A96E',
+            fontFamily: 'var(--font-ui)', fontSize: 11, color: '#8B6F47',
             letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16
           }}>{t(lang, 'searchResults')}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
@@ -288,7 +288,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
             }} />
             <div style={{ position: 'absolute', bottom: 28, left: 24, right: 24 }}>
               <p style={{
-                fontFamily: 'var(--font-ui)', fontSize: 10, color: '#C9A96E',
+                fontFamily: 'var(--font-ui)', fontSize: 10, color: '#8B6F47',
                 letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8
               }}>{t(lang, 'featuredToday')}</p>
               <h2 style={{
@@ -433,7 +433,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               />
               <div style={{ flex: 1 }}>
                 <p style={{
-                  fontSize: 10, color: '#C9A96E', letterSpacing: 2,
+                  fontSize: 10, color: '#8B6F47', letterSpacing: 2,
                   textTransform: 'uppercase', marginBottom: 8,
                   fontFamily: 'var(--font-ui)'
                 }}>{selectedBook.era} · {selectedBook.language}</p>
