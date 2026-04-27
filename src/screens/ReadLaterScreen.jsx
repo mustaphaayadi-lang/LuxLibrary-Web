@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { books } from '../data/books'
+import { t } from '../data/translations'
 
-export default function ReadLaterScreen({ navigate, theme }) {
+export default function ReadLaterScreen({ navigate, theme, lang }) {
   const [readLater, setReadLater] = useState([])
+  const isRTL = lang === 'ar'
 
   useEffect(() => {
     load()
@@ -21,8 +23,16 @@ export default function ReadLaterScreen({ navigate, theme }) {
     load()
   }
 
+  const getSummary = (book) => {
+    if (typeof book.summary === 'object') return book.summary[lang] || book.summary.en
+    return book.summary
+  }
+
   return (
-    <div style={{ minHeight: '100vh', background: theme.bg, paddingBottom: 100, transition: 'background 0.3s' }}>
+    <div style={{
+      minHeight: '100vh', background: theme.bg,
+      paddingBottom: 100, direction: isRTL ? 'rtl' : 'ltr'
+    }}>
 
       {/* Header */}
       <div style={{ padding: '56px 24px 32px' }}>
@@ -30,11 +40,11 @@ export default function ReadLaterScreen({ navigate, theme }) {
           fontSize: 10, color: '#C9A96E', letterSpacing: 3,
           textTransform: 'uppercase', marginBottom: 10,
           fontFamily: 'var(--font-ui)'
-        }}>Your Wishlist</p>
+        }}>{t(lang, 'yourWishlist')}</p>
         <h1 style={{
           fontFamily: 'var(--font-display)', fontSize: 32,
           color: theme.text, fontStyle: 'italic', margin: 0
-        }}>Read Later</h1>
+        }}>{t(lang, 'readLaterTitle')}</h1>
       </div>
 
       {readLater.length === 0 ? (
@@ -48,16 +58,16 @@ export default function ReadLaterScreen({ navigate, theme }) {
           <h2 style={{
             fontFamily: 'var(--font-display)', fontSize: 22,
             color: theme.text, marginBottom: 10, fontStyle: 'italic'
-          }}>Nothing saved yet</h2>
+          }}>{t(lang, 'nothingSaved')}</h2>
           <p style={{
             fontSize: 14, color: theme.textMuted,
             marginBottom: 32, fontFamily: 'var(--font-ui)', lineHeight: 1.6
-          }}>Browse the library and save books you want to read later.</p>
+          }}>{t(lang, 'nothingSavedDesc')}</p>
           <button onClick={() => navigate('entrance')} style={{
             background: '#C9A96E', border: 'none', borderRadius: 12,
             padding: '14px 32px', color: '#0F0C09', fontSize: 14,
             fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-ui)'
-          }}>Browse Library</button>
+          }}>{t(lang, 'browseLibrary')}</button>
         </div>
       ) : (
         <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -96,7 +106,7 @@ export default function ReadLaterScreen({ navigate, theme }) {
                     lineHeight: 1.6,
                     overflow: 'hidden', display: '-webkit-box',
                     WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'
-                  }}>{book.summary}</p>
+                  }}>{getSummary(book)}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                   <button
@@ -107,7 +117,7 @@ export default function ReadLaterScreen({ navigate, theme }) {
                       borderRadius: 10, color: '#fff',
                       fontSize: 12, fontWeight: 600,
                       cursor: 'pointer', fontFamily: 'var(--font-ui)'
-                    }}>Borrow Now</button>
+                    }}>{t(lang, 'borrowNow')}</button>
                   <button
                     onClick={() => remove(book.id)}
                     style={{
@@ -117,7 +127,7 @@ export default function ReadLaterScreen({ navigate, theme }) {
                       borderRadius: 10, color: theme.textMuted,
                       fontSize: 12, cursor: 'pointer',
                       fontFamily: 'var(--font-ui)'
-                    }}>Remove</button>
+                    }}>{t(lang, 'remove')}</button>
                 </div>
               </div>
             </div>
