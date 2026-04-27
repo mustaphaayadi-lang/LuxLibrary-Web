@@ -314,7 +314,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
           <div style={{
             padding: '20px 0 4px',
             background: theme.bg,
-            position: 'sticky', top: 88, zIndex: 40,
+            zIndex: 40,
             borderBottom: '1px solid ' + theme.border,
             marginBottom: 28
           }}>
