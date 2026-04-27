@@ -10,7 +10,7 @@ export const books = [
     language: 'English',
     genres: ['Society & Politics', 'Romance & Passion', 'Power & Ambition'],
     cover: 'https://www.gutenberg.org/cache/epub/64317/pg64317.cover.medium.jpg',
-    textUrl: `${BASE}/The%20Great%20Gatsby%20-%20cleaned.txt`,
+    textUrl: `${BASE}/The%20Great%20Gatsby.txt`,
     summary: {
       en: 'A dazzling portrait of the Jazz Age, where wealth, obsession, and the American Dream collide on the shores of Long Island.',
       fr: 'Un portrait éblouissant de l\'ère du jazz, où richesse, obsession et rêve américain s\'entrechoquent sur les rives de Long Island.',
@@ -27,7 +27,7 @@ export const books = [
     language: 'Russian',
     genres: ['Psychology & Mind', 'Dark & Gothic', 'Society & Politics'],
     cover: 'https://www.gutenberg.org/cache/epub/2554/pg2554.cover.medium.jpg',
-    textUrl: `${BASE}/Crime%20and%20Punishment%20-%20cleaned.txt`,
+    textUrl: `${BASE}/Crime%20and%20Punishment.txt`,
     summary: {
       en: 'A tormented student murders a pawnbroker and descends into psychological anguish — a masterpiece of moral philosophy.',
       fr: 'Un étudiant tourmenté assassine une usurière et sombre dans l\'angoisse psychologique — un chef-d\'œuvre de philosophie morale.',
@@ -44,7 +44,7 @@ export const books = [
     language: 'English',
     genres: ['Romance & Passion', 'Society & Politics'],
     cover: 'https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg',
-    textUrl: `${BASE}/Pride%20and%20Prejudice%20-%20cleaned.txt`,
+    textUrl: `${BASE}/Pride%20and%20Prejudice.txt`,
     summary: {
       en: 'Wit, romance, and social satire intertwine as Elizabeth Bennet navigates love and class in Regency-era England.',
       fr: 'Esprit, romance et satire sociale s\'entrelacent tandis qu\'Elizabeth Bennet navigue entre amour et classe en Angleterre.',
@@ -61,7 +61,7 @@ export const books = [
     language: 'French',
     genres: ['Romance & Passion', 'Psychology & Mind', 'Society & Politics'],
     cover: 'https://www.gutenberg.org/cache/epub/2413/pg2413.cover.medium.jpg',
-    textUrl: `${BASE}/Madame%20Bovary%20-%20cleaned.txt`,
+    textUrl: `${BASE}/Madame%20Bovary.txt`,
     summary: {
       en: "A provincial doctor's wife seeks escape from boredom through romance and luxury — with devastating consequences.",
       fr: 'La femme d\'un médecin de province cherche à fuir l\'ennui par le romanesque et le luxe — avec des conséquences dévastatrices.',
@@ -78,7 +78,7 @@ export const books = [
     language: 'English',
     genres: ['Dark & Gothic', 'Psychology & Mind', 'Power & Ambition'],
     cover: 'https://www.gutenberg.org/cache/epub/174/pg174.cover.medium.jpg',
-    textUrl: `${BASE}/The%20Picture%20of%20Dorian%20Gray%20-%20cleaned.txt`,
+    textUrl: `${BASE}/The%20Picture%20of%20Dorian%20Gray.txt`,
     summary: {
       en: 'A beautiful young man sells his soul for eternal youth while his portrait bears the weight of his corruption.',
       fr: 'Un beau jeune homme vend son âme pour la jeunesse éternelle tandis que son portrait supporte le poids de sa corruption.',
@@ -95,7 +95,7 @@ export const books = [
     language: 'Russian',
     genres: ['Romance & Passion', 'Society & Politics', 'Psychology & Mind'],
     cover: 'https://www.gutenberg.org/cache/epub/1399/pg1399.cover.medium.jpg',
-    textUrl: `${BASE}/Anna%20Karenina%20-%20cleaned.txt`,
+    textUrl: `${BASE}/Anna%20Karenina.txt`,
     summary: {
       en: "A passionate affair tears apart the life of a Russian aristocrat in Tolstoy's sweeping meditation on love and society.",
       fr: 'Une liaison passionnée déchire la vie d\'une aristocrate russe dans la vaste méditation de Tolstoï sur l\'amour et la société.',

@@ -1,4 +1,6 @@
-export default function BookCardScreen({ book, navigate }) {
+import { t } from '../data/translations'
+
+export default function BookCardScreen({ book, navigate, theme, lang }) {
   const handleBorrow = () => {
     const checkoutData = {
       bookId: book.id,
@@ -9,14 +11,21 @@ export default function BookCardScreen({ book, navigate }) {
     navigate('table')
   }
 
+  const getSummary = () => {
+    if (typeof book.summary === 'object') return book.summary[lang] || book.summary.en
+    return book.summary
+  }
+
+  const isRTL = lang === 'ar'
+
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 120 }}>
+    <div style={{ minHeight: '100vh', background: theme.bg, paddingBottom: 120, direction: isRTL ? 'rtl' : 'ltr' }}>
 
       <button onClick={() => navigate('entrance')} style={{
-        position: 'fixed', top: 52, left: 24, zIndex: 10,
-        background: 'none', border: 'none', color: 'var(--gold)',
+        position: 'fixed', top: 52, left: isRTL ? 'auto' : 24, right: isRTL ? 24 : 'auto',
+        zIndex: 10, background: 'none', border: 'none', color: '#C9A96E',
         fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-ui)'
-      }}>← Library</button>
+      }}>← {t(lang, 'library')}</button>
 
       <div style={{ height: 380, position: 'relative', overflow: 'hidden' }}>
         <img src={book.cover} alt={book.title} style={{
@@ -24,13 +33,13 @@ export default function BookCardScreen({ book, navigate }) {
         }} />
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(to top, var(--bg) 0%, transparent 50%, rgba(15,12,9,0.7) 100%)'
+          background: `linear-gradient(to top, ${theme.bg} 0%, transparent 50%, rgba(15,12,9,0.7) 100%)`
         }} />
         <div style={{
           position: 'absolute', bottom: -50, left: 24,
           boxShadow: '0 20px 60px rgba(0,0,0,0.7)',
           borderRadius: 10, overflow: 'hidden',
-          border: '1px solid var(--border)'
+          border: `1px solid ${theme.border}`
         }}>
           <img src={book.cover} alt={book.title} style={{ width: 100, height: 150, objectFit: 'cover', display: 'block' }} />
         </div>
@@ -38,43 +47,43 @@ export default function BookCardScreen({ book, navigate }) {
 
       <div style={{ padding: '64px 24px 0' }}>
         <p style={{
-          fontSize: 10, color: 'var(--gold)', letterSpacing: 3,
+          fontSize: 10, color: '#C9A96E', letterSpacing: 3,
           textTransform: 'uppercase', marginBottom: 10, fontFamily: 'var(--font-ui)'
         }}>{book.era} · {book.language}</p>
 
         <h1 style={{
           fontFamily: 'var(--font-display)', fontSize: 30,
-          color: 'var(--text-primary)', marginBottom: 8,
+          color: theme.text, marginBottom: 8,
           lineHeight: 1.2, fontStyle: 'italic'
         }}>{book.title}</h1>
 
         <p style={{
-          fontSize: 14, color: 'var(--text-secondary)',
+          fontSize: 14, color: theme.textSecondary,
           marginBottom: 28, fontFamily: 'var(--font-ui)'
         }}>{book.author} · {book.year}</p>
 
-        <div style={{ height: 1, background: 'var(--border)', marginBottom: 28 }} />
+        <div style={{ height: 1, background: theme.border, marginBottom: 28 }} />
 
         <p style={{
-          fontSize: 10, color: 'var(--text-muted)', letterSpacing: 2,
+          fontSize: 10, color: theme.textMuted, letterSpacing: 2,
           textTransform: 'uppercase', marginBottom: 12, fontFamily: 'var(--font-ui)'
-        }}>About this book</p>
+        }}>{t(lang, 'aboutBook')}</p>
 
         <p style={{
           fontFamily: 'var(--font-body)', fontSize: 15,
-          color: 'var(--text-secondary)', lineHeight: 1.8,
+          color: theme.textSecondary, lineHeight: 1.8,
           marginBottom: 32, fontStyle: 'italic'
-        }}>{book.summary}</p>
+        }}>{getSummary()}</p>
 
         <div style={{
           display: 'flex', justifyContent: 'space-around',
-          background: 'var(--bg-card)', border: '1px solid var(--border)',
+          background: theme.bgCard, border: `1px solid ${theme.border}`,
           borderRadius: 16, padding: 20, marginBottom: 32
         }}>
-          {[['Pages', book.pages], ['Loan Period', '21 Days'], ['Cost', 'Free']].map(([label, value]) => (
+          {[[t(lang, 'pages'), book.pages], ['Loan', '21 Days'], [t(lang, 'cost'), t(lang, 'cost')]].map(([label, value]) => (
             <div key={label} style={{ textAlign: 'center' }}>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--text-primary)', marginBottom: 4 }}>{value}</p>
-              <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>{label}</p>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: theme.text, marginBottom: 4 }}>{value}</p>
+              <p style={{ fontSize: 11, color: theme.textMuted, fontFamily: 'var(--font-ui)' }}>{label}</p>
             </div>
           ))}
         </div>
@@ -83,17 +92,17 @@ export default function BookCardScreen({ book, navigate }) {
       <div style={{
         position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: 430, padding: '16px 24px 36px',
-        background: 'linear-gradient(transparent, var(--bg) 30%)', textAlign: 'center'
+        background: `linear-gradient(transparent, ${theme.bg} 30%)`, textAlign: 'center'
       }}>
         <button onClick={handleBorrow} style={{
           width: '100%', padding: '16px 0',
-          background: 'var(--blue)', border: 'none', borderRadius: 14,
+          background: '#1a6bff', border: 'none', borderRadius: 14,
           color: '#fff', fontSize: 16, fontWeight: 600,
           cursor: 'pointer', fontFamily: 'var(--font-ui)', marginBottom: 10,
           boxShadow: '0 8px 24px rgba(26,107,255,0.3)'
-        }}>Borrow for 21 Days</button>
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>
-          1 short ad · your progress saved for 21 days
+        }}>{t(lang, 'borrowBtn')}</button>
+        <p style={{ fontSize: 11, color: theme.textMuted, fontFamily: 'var(--font-ui)' }}>
+          {t(lang, 'borrowNote')}
         </p>
       </div>
     </div>
