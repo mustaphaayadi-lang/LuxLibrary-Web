@@ -271,7 +271,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
       {!filtered && (
         <>
           {/* Hero Banner */}
-          <div style={{ height: 380, position: 'relative', overflow: 'hidden', marginBottom: 0 }}>
+          <div style={{ height: 230, position: 'relative', overflow: 'hidden', marginBottom: 0 }}>
             <img
               src={hero.cover}
               alt={hero.title}
