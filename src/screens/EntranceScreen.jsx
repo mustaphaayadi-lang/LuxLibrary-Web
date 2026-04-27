@@ -12,6 +12,18 @@ const SHELVES = [
   { labelKey: 'shelfShort', filter: b => b.pages < 300 },
 ]
 
+const CATEGORIES = [
+  { id: 'all', icon: '✨', label: { en: 'All', fr: 'Tout', ar: 'الكل' } },
+  { id: 'Romance & Passion', icon: '💔', label: { en: 'Romance', fr: 'Romance', ar: 'رومانسية' } },
+  { id: 'Psychology & Mind', icon: '🧠', label: { en: 'Psychology', fr: 'Psychologie', ar: 'علم النفس' } },
+  { id: 'Dark & Gothic', icon: '🖤', label: { en: 'Gothic', fr: 'Gothique', ar: 'قوطي' } },
+  { id: 'Society & Politics', icon: '🌍', label: { en: 'Society', fr: 'Société', ar: 'المجتمع' } },
+  { id: 'Power & Ambition', icon: '👑', label: { en: 'Ambition', fr: 'Ambition', ar: 'الطموح' } },
+  { id: 'Mystery & Suspense', icon: '🕵️', label: { en: 'Mystery', fr: 'Mystère', ar: 'غموض' } },
+  { id: 'Nature & Philosophy', icon: '🌿', label: { en: 'Philosophy', fr: 'Philosophie', ar: 'فلسفة' } },
+  { id: 'War & History', icon: '⚔️', label: { en: 'History', fr: 'Histoire', ar: 'التاريخ' } },
+]
+
 const THEME_OPTIONS = [
   { key: 'night', icon: '☽', label: 'Night' },
   { key: 'paper', icon: '❧', label: 'Paper' },
@@ -28,7 +40,7 @@ function BookCard({ book, onClick, theme }) {
     >
       <div style={{
         width: 110, height: 165, borderRadius: 8, overflow: 'hidden',
-        border: `1px solid ${theme.border}`,
+        border: '1px solid ' + theme.border,
         background: theme.bgCard,
         boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
       }}>
@@ -75,6 +87,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
   const [search, setSearch] = useState('')
   const [showSearch, setShowSearch] = useState(false)
   const [showThemePicker, setShowThemePicker] = useState(false)
+  const [activeCategory, setActiveCategory] = useState('all')
   const [savedBooks, setSavedBooks] = useState(
     JSON.parse(localStorage.getItem('lux_read_later') || '[]')
   )
@@ -96,6 +109,10 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
         b.author.toLowerCase().includes(search.toLowerCase())
       )
     : null
+
+  const categoryBooks = activeCategory === 'all'
+    ? null
+    : books.filter(b => b.genres && b.genres.includes(activeCategory))
 
   const handleBookClick = (book) => {
     setSheetY(0)
@@ -145,7 +162,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
         position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: 430, zIndex: 50,
         padding: '48px 24px 16px',
-        background: `linear-gradient(${theme.bg} 60%, transparent)`,
+        background: 'linear-gradient(' + theme.bg + ' 60%, transparent)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         transition: 'background 0.3s'
       }}>
@@ -159,7 +176,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
             <button
               onClick={() => { setShowThemePicker(!showThemePicker); setShowSearch(false) }}
               style={{
-                background: 'none', border: `1px solid ${theme.border}`,
+                background: 'none', border: '1px solid ' + theme.border,
                 borderRadius: 20, padding: '6px 12px',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 color: theme.textSecondary, fontSize: 16
@@ -172,7 +189,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               <div style={{
                 position: 'absolute', top: 44, right: isRTL ? 'auto' : 0, left: isRTL ? 0 : 'auto',
                 background: currentTheme === 'night' ? '#1A1410' : theme.bg,
-                border: `1px solid ${theme.border}`,
+                border: '1px solid ' + theme.border,
                 borderRadius: 16, padding: 8,
                 boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
                 display: 'flex', flexDirection: 'column', gap: 4,
@@ -214,7 +231,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
           position: 'fixed', top: 108, left: '50%', transform: 'translateX(-50%)',
           width: '90%', maxWidth: 390, zIndex: 50,
           background: currentTheme === 'night' ? '#1C1610' : theme.bg,
-          border: `1px solid ${theme.border}`,
+          border: '1px solid ' + theme.border,
           borderRadius: 14, padding: '12px 16px',
           boxShadow: '0 20px 60px rgba(0,0,0,0.6)'
         }}>
@@ -253,15 +270,21 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
       {/* Main Content */}
       {!filtered && (
         <>
-          <div style={{ height: 380, position: 'relative', overflow: 'hidden', marginBottom: 32 }}>
+          {/* Hero Banner */}
+          <div style={{ height: 380, position: 'relative', overflow: 'hidden', marginBottom: 0 }}>
             <img
               src={hero.cover}
               alt={hero.title}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.5)' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.4)' }}
             />
+            {/* Warm glow overlay */}
             <div style={{
               position: 'absolute', inset: 0,
-              background: `linear-gradient(to top, ${theme.bg} 0%, transparent 50%, rgba(15,12,9,0.6) 100%)`
+              background: 'radial-gradient(ellipse at 30% 50%, rgba(201,169,110,0.08) 0%, transparent 70%)'
+            }} />
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to top, ' + theme.bg + ' 0%, transparent 45%, rgba(15,12,9,0.7) 100%)'
             }} />
             <div style={{ position: 'absolute', bottom: 28, left: 24, right: 24 }}>
               <p style={{
@@ -269,10 +292,11 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                 letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8
               }}>{t(lang, 'featuredToday')}</p>
               <h2 style={{
-                fontFamily: 'var(--font-display)', fontSize: 28,
-                color: '#EDE8DF', marginBottom: 8, fontStyle: 'italic'
+                fontFamily: 'var(--font-display)', fontSize: 30,
+                color: '#EDE8DF', marginBottom: 6, fontStyle: 'italic',
+                lineHeight: 1.2
               }}>{hero.title}</h2>
-              <p style={{ fontSize: 13, color: 'rgba(237,232,223,0.6)', marginBottom: 16 }}>
+              <p style={{ fontSize: 13, color: 'rgba(237,232,223,0.55)', marginBottom: 20 }}>
                 {hero.author} · {hero.year}
               </p>
               <button
@@ -280,23 +304,83 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                 style={{
                   background: '#C9A96E', border: 'none', borderRadius: 10,
                   padding: '10px 24px', color: '#0F0C09', fontSize: 13,
-                  fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-ui)'
+                  fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-ui)',
+                  boxShadow: '0 4px 20px rgba(201,169,110,0.3)'
                 }}>{t(lang, 'viewBook')}</button>
             </div>
           </div>
 
-          <div style={{ paddingTop: 8 }}>
-            {SHELVES.map(shelf => (
-              <Shelf
-                key={shelf.labelKey}
-                labelKey={shelf.labelKey}
-                books={books.filter(shelf.filter)}
-                onBookClick={handleBookClick}
-                theme={theme}
-                lang={lang}
-              />
-            ))}
+          {/* Categories */}
+          <div style={{
+            padding: '20px 0 4px',
+            background: theme.bg,
+            position: 'sticky', top: 88, zIndex: 40,
+            borderBottom: '1px solid ' + theme.border,
+            marginBottom: 28
+          }}>
+            <div style={{
+              display: 'flex', gap: 8, overflowX: 'auto',
+              padding: '0 24px 16px', scrollbarWidth: 'none'
+            }}>
+              {CATEGORIES.map(cat => {
+                const isActive = activeCategory === cat.id
+                const label = cat.label[lang] || cat.label.en
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    style={{
+                      flexShrink: 0,
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      padding: '8px 16px', borderRadius: 20,
+                      background: isActive ? '#C9A96E' : theme.bgCard,
+                      border: '1px solid ' + (isActive ? '#C9A96E' : theme.border),
+                      color: isActive ? '#0F0C09' : theme.textSecondary,
+                      fontSize: 12, fontWeight: isActive ? 600 : 400,
+                      cursor: 'pointer', fontFamily: 'var(--font-ui)',
+                      transition: 'all 0.2s',
+                      whiteSpace: 'nowrap'
+                    }}>
+                    <span style={{ fontSize: 14 }}>{cat.icon}</span>
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
           </div>
+
+          {/* Category Results */}
+          {categoryBooks && (
+            <div style={{ padding: '0 24px' }}>
+              {categoryBooks.length === 0 ? (
+                <p style={{ color: theme.textMuted, fontSize: 14, fontFamily: 'var(--font-ui)' }}>
+                  {lang === 'ar' ? 'لا توجد كتب في هذه الفئة بعد' : lang === 'fr' ? 'Aucun livre dans cette catégorie' : 'No books in this category yet.'}
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+                  {categoryBooks.map(book => (
+                    <BookCard key={book.id} book={book} onClick={handleBookClick} theme={theme} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Shelves — only show when no category selected */}
+          {!categoryBooks && (
+            <div style={{ paddingTop: 8 }}>
+              {SHELVES.map(shelf => (
+                <Shelf
+                  key={shelf.labelKey}
+                  labelKey={shelf.labelKey}
+                  books={books.filter(shelf.filter)}
+                  onBookClick={handleBookClick}
+                  theme={theme}
+                  lang={lang}
+                />
+              ))}
+            </div>
+          )}
         </>
       )}
 
@@ -318,10 +402,10 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
             onTouchEnd={handleSheetTouchEnd}
             style={{
               position: 'fixed', bottom: 0, left: '50%',
-              transform: `translateX(-50%) translateY(${sheetY}px)`,
+              transform: 'translateX(-50%) translateY(' + sheetY + 'px)',
               width: '100%', maxWidth: 430, zIndex: 70,
               background: currentTheme === 'night' ? '#1A1410' : theme.bg,
-              border: `1px solid ${theme.border}`,
+              border: '1px solid ' + theme.border,
               borderRadius: '24px 24px 0 0',
               boxShadow: '0 -20px 60px rgba(0,0,0,0.6)',
               animation: sheetY === 0 ? 'slideUp 0.3s ease' : 'none',
@@ -344,7 +428,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                 style={{
                   width: 90, height: 135, objectFit: 'cover',
                   borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                  border: `1px solid ${theme.border}`, flexShrink: 0
+                  border: '1px solid ' + theme.border, flexShrink: 0
                 }}
               />
               <div style={{ flex: 1 }}>
@@ -375,7 +459,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
 
             <div style={{
               display: 'flex', justifyContent: 'space-around',
-              background: theme.bgCard, border: `1px solid ${theme.border}`,
+              background: theme.bgCard, border: '1px solid ' + theme.border,
               borderRadius: 14, margin: '0 24px 24px', padding: 16
             }}>
               {[[t(lang, 'pages'), selectedBook.pages], [t(lang, 'loan'), t(lang, 'loanDays')], [t(lang, 'cost'), t(lang, 'cost')]].map(([label, value]) => (
@@ -392,7 +476,6 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               ))}
             </div>
 
-            {/* Buttons — extra padding at bottom to clear tab bar */}
             <div style={{ padding: '0 24px 160px', display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button
                 onClick={() => { navigate('bookcard', { book: selectedBook }); closeSheet() }}
@@ -409,13 +492,13 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                 style={{
                   width: '100%', padding: '14px 0',
                   background: isBookSaved(selectedBook.id) ? 'rgba(201,169,110,0.12)' : 'none',
-                  border: `1px solid ${isBookSaved(selectedBook.id) ? '#C9A96E' : theme.border}`,
+                  border: '1px solid ' + (isBookSaved(selectedBook.id) ? '#C9A96E' : theme.border),
                   borderRadius: 14,
                   color: isBookSaved(selectedBook.id) ? '#C9A96E' : theme.textSecondary,
                   fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', fontFamily: 'var(--font-ui)'
                 }}>
-                {isBookSaved(selectedBook.id) ? `🔖 ${t(lang, 'savedForLater')}` : `🔖 ${t(lang, 'saveForLater')}`}
+                {isBookSaved(selectedBook.id) ? '🔖 ' + t(lang, 'savedForLater') : '🔖 ' + t(lang, 'saveForLater')}
               </button>
 
               <p style={{
