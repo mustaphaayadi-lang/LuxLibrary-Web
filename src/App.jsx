@@ -5,6 +5,8 @@ import TableScreen from './screens/TableScreen'
 import ReaderScreen from './screens/ReaderScreen'
 import OnboardingScreen from './screens/OnboardingScreen'
 import ReadLaterScreen from './screens/ReadLaterScreen'
+import ProfileScreen from './screens/ProfileScreen'
+import SettingsScreen from './screens/SettingsScreen'
 import { t } from './data/translations'
 import './index.css'
 
@@ -75,6 +77,13 @@ export default function App() {
 
   const hideTab = screen === 'reader' || screen === 'onboarding'
 
+  const TABS = [
+    { key: 'entrance', icon: '📖', label: t(lang, 'library') },
+    { key: 'readlater', icon: '🔖', label: t(lang, 'readLater') },
+    { key: 'profile', icon: '👤', label: 'Profile' },
+    { key: 'settings', icon: '⚙️', label: 'Settings' },
+  ]
+
   return (
     <div style={{
       maxWidth: 430, margin: '0 auto',
@@ -88,6 +97,8 @@ export default function App() {
       {screen === 'table' && <TableScreen navigate={navigate} theme={tr} lang={lang} />}
       {screen === 'readlater' && <ReadLaterScreen navigate={navigate} theme={tr} lang={lang} />}
       {screen === 'reader' && <ReaderScreen navigate={navigate} book={selectedBook} globalTheme={theme} lang={lang} />}
+      {screen === 'profile' && <ProfileScreen navigate={navigate} theme={tr} lang={lang} />}
+      {screen === 'settings' && <SettingsScreen navigate={navigate} theme={tr} lang={lang} changeLang={changeLang} />}
 
       {!hideTab && (
         <div style={{
@@ -98,33 +109,18 @@ export default function App() {
           padding: '10px 0 24px', zIndex: 100,
           transition: 'background 0.3s'
         }}>
-          <button onClick={() => navigate('entrance')} style={{
-            flex: 1, background: 'none', border: 'none', cursor: 'pointer',
-            color: screen === 'entrance' ? '#C9A96E' : tr.textMuted,
-            fontSize: 11, display: 'flex', flexDirection: 'column',
-            alignItems: 'center', gap: 4, fontFamily: 'var(--font-ui)'
-          }}>
-            <span style={{ fontSize: 20 }}>📖</span>
-            {t(lang, 'library')}
-          </button>
-          <button onClick={() => navigate('readlater')} style={{
-            flex: 1, background: 'none', border: 'none', cursor: 'pointer',
-            color: screen === 'readlater' ? '#C9A96E' : tr.textMuted,
-            fontSize: 11, display: 'flex', flexDirection: 'column',
-            alignItems: 'center', gap: 4, fontFamily: 'var(--font-ui)'
-          }}>
-            <span style={{ fontSize: 20 }}>🔖</span>
-            {t(lang, 'readLater')}
-          </button>
-          <button onClick={() => navigate('table')} style={{
-            flex: 1, background: 'none', border: 'none', cursor: 'pointer',
-            color: screen === 'table' ? '#C9A96E' : tr.textMuted,
-            fontSize: 11, display: 'flex', flexDirection: 'column',
-            alignItems: 'center', gap: 4, fontFamily: 'var(--font-ui)'
-          }}>
-            <span style={{ fontSize: 20 }}>🪑</span>
-            {t(lang, 'myTable')}
-          </button>
+          {TABS.map(tab => (
+            <button key={tab.key} onClick={() => navigate(tab.key)} style={{
+              flex: 1, background: 'none', border: 'none', cursor: 'pointer',
+              color: screen === tab.key ? '#C9A96E' : tr.textMuted,
+              fontSize: 10, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', gap: 3, fontFamily: 'var(--font-ui)',
+              padding: '4px 0'
+            }}>
+              <span style={{ fontSize: 18 }}>{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
         </div>
       )}
     </div>

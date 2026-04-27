@@ -323,7 +323,6 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               background: currentTheme === 'night' ? '#1A1410' : theme.bg,
               border: `1px solid ${theme.border}`,
               borderRadius: '24px 24px 0 0',
-              padding: '0 0 120px',
               boxShadow: '0 -20px 60px rgba(0,0,0,0.6)',
               animation: sheetY === 0 ? 'slideUp 0.3s ease' : 'none',
               maxHeight: '85vh',
@@ -393,7 +392,8 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               ))}
             </div>
 
-            <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {/* Buttons — extra padding at bottom to clear tab bar */}
+            <div style={{ padding: '0 24px 160px', display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button
                 onClick={() => { navigate('bookcard', { book: selectedBook }); closeSheet() }}
                 style={{
