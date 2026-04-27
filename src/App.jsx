@@ -5,6 +5,7 @@ import TableScreen from './screens/TableScreen'
 import ReaderScreen from './screens/ReaderScreen'
 import OnboardingScreen from './screens/OnboardingScreen'
 import ReadLaterScreen from './screens/ReadLaterScreen'
+import { t } from './data/translations'
 import './index.css'
 
 export const THEMES = {
@@ -45,12 +46,21 @@ export default function App() {
   const [theme, setTheme] = useState(
     localStorage.getItem('lux_theme') || 'night'
   )
+  const [lang, setLang] = useState(
+    localStorage.getItem('lux_lang') || 'en'
+  )
 
-  const t = THEMES[theme]
+  const tr = THEMES[theme]
+  const isRTL = lang === 'ar'
 
   const changeTheme = (newTheme) => {
     setTheme(newTheme)
     localStorage.setItem('lux_theme', newTheme)
+  }
+
+  const changeLang = (newLang) => {
+    setLang(newLang)
+    localStorage.setItem('lux_lang', newLang)
   }
 
   const navigate = (to, params = {}) => {
@@ -58,54 +68,62 @@ export default function App() {
     setScreen(to)
   }
 
-  const handleOnboardingFinish = () => setScreen('entrance')
+  const handleOnboardingFinish = (prefs) => {
+    if (prefs.appLang) changeLang(prefs.appLang)
+    setScreen('entrance')
+  }
+
   const hideTab = screen === 'reader' || screen === 'onboarding'
 
   return (
     <div style={{
       maxWidth: 430, margin: '0 auto',
-      minHeight: '100vh', background: t.bg,
-      position: 'relative', transition: 'background 0.3s'
+      minHeight: '100vh', background: tr.bg,
+      position: 'relative', transition: 'background 0.3s',
+      direction: isRTL ? 'rtl' : 'ltr'
     }}>
-      {screen === 'onboarding' && <OnboardingScreen onFinish={handleOnboardingFinish} />}
-      {screen === 'entrance' && <EntranceScreen navigate={navigate} theme={t} currentTheme={theme} changeTheme={changeTheme} />}
-      {screen === 'bookcard' && <BookCardScreen navigate={navigate} book={selectedBook} theme={t} />}
-      {screen === 'table' && <TableScreen navigate={navigate} theme={t} />}
-      {screen === 'readlater' && <ReadLaterScreen navigate={navigate} theme={t} />}
-      {screen === 'reader' && <ReaderScreen navigate={navigate} book={selectedBook} globalTheme={theme} />}
+      {screen === 'onboarding' && <OnboardingScreen onFinish={handleOnboardingFinish} lang={lang} changeLang={changeLang} />}
+      {screen === 'entrance' && <EntranceScreen navigate={navigate} theme={tr} currentTheme={theme} changeTheme={changeTheme} lang={lang} />}
+      {screen === 'bookcard' && <BookCardScreen navigate={navigate} book={selectedBook} theme={tr} lang={lang} />}
+      {screen === 'table' && <TableScreen navigate={navigate} theme={tr} lang={lang} />}
+      {screen === 'readlater' && <ReadLaterScreen navigate={navigate} theme={tr} lang={lang} />}
+      {screen === 'reader' && <ReaderScreen navigate={navigate} book={selectedBook} globalTheme={theme} lang={lang} />}
 
       {!hideTab && (
         <div style={{
           position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
           width: '100%', maxWidth: 430, display: 'flex',
-          backgroundColor: t.navBg,
-          borderTop: `1px solid ${t.border}`,
+          backgroundColor: tr.navBg,
+          borderTop: `1px solid ${tr.border}`,
           padding: '10px 0 24px', zIndex: 100,
           transition: 'background 0.3s'
         }}>
           <button onClick={() => navigate('entrance')} style={{
             flex: 1, background: 'none', border: 'none', cursor: 'pointer',
-            color: screen === 'entrance' ? '#C9A96E' : t.textMuted,
+            color: screen === 'entrance' ? '#C9A96E' : tr.textMuted,
             fontSize: 11, display: 'flex', flexDirection: 'column',
             alignItems: 'center', gap: 4, fontFamily: 'var(--font-ui)'
           }}>
-            <span style={{ fontSize: 20 }}>📖</span>Library
+            <span style={{ fontSize: 20 }}>📖</span>
+            {t(lang, 'library')}
           </button>
           <button onClick={() => navigate('readlater')} style={{
             flex: 1, background: 'none', border: 'none', cursor: 'pointer',
-            color: screen === 'readlater' ? '#C9A96E' : t.textMuted,
+            color: screen === 'readlater' ? '#C9A96E' : tr.textMuted,
             fontSize: 11, display: 'flex', flexDirection: 'column',
             alignItems: 'center', gap: 4, fontFamily: 'var(--font-ui)'
           }}>
-            <span style={{ fontSize: 20 }}>🔖</span>Read Later
+            <span style={{ fontSize: 20 }}>🔖</span>
+            {t(lang, 'readLater')}
           </button>
           <button onClick={() => navigate('table')} style={{
             flex: 1, background: 'none', border: 'none', cursor: 'pointer',
-            color: screen === 'table' ? '#C9A96E' : t.textMuted,
+            color: screen === 'table' ? '#C9A96E' : tr.textMuted,
             fontSize: 11, display: 'flex', flexDirection: 'column',
             alignItems: 'center', gap: 4, fontFamily: 'var(--font-ui)'
           }}>
-            <span style={{ fontSize: 20 }}>🪑</span>My Table
+            <span style={{ fontSize: 20 }}>🪑</span>
+            {t(lang, 'myTable')}
           </button>
         </div>
       )}
