@@ -1,14 +1,15 @@
 import { useState, useRef } from 'react'
 import { books } from '../data/books'
+import { t } from '../data/translations'
 
 const SHELVES = [
-  { label: 'Featured Today', filter: () => true },
-  { label: 'Classic Literature', filter: b => b.era === 'Classic' },
-  { label: 'Victorian Era', filter: b => b.era === 'Victorian' },
-  { label: 'Modern Masterpieces', filter: b => b.era === 'Modern' },
-  { label: 'French Masters', filter: b => b.language === 'French' },
-  { label: 'Russian Giants', filter: b => b.language === 'Russian' },
-  { label: 'Short Reads', filter: b => b.pages < 300 },
+  { labelKey: 'shelfFeatured', filter: () => true },
+  { labelKey: 'shelfClassic', filter: b => b.era === 'Classic' },
+  { labelKey: 'shelfVictorian', filter: b => b.era === 'Victorian' },
+  { labelKey: 'shelfModern', filter: b => b.era === 'Modern' },
+  { labelKey: 'shelfFrench', filter: b => b.language === 'French' },
+  { labelKey: 'shelfRussian', filter: b => b.language === 'Russian' },
+  { labelKey: 'shelfShort', filter: b => b.pages < 300 },
 ]
 
 const THEME_OPTIONS = [
@@ -48,7 +49,7 @@ function BookCard({ book, onClick, theme }) {
   )
 }
 
-function Shelf({ label, books, onBookClick, theme }) {
+function Shelf({ labelKey, books, onBookClick, theme, lang }) {
   if (books.length === 0) return null
   return (
     <div style={{ marginBottom: 36 }}>
@@ -56,7 +57,7 @@ function Shelf({ label, books, onBookClick, theme }) {
         fontFamily: 'var(--font-ui)', fontSize: 11, fontWeight: 500,
         color: '#C9A96E', letterSpacing: 2, textTransform: 'uppercase',
         padding: '0 24px', marginBottom: 16
-      }}>{label}</p>
+      }}>{t(lang, labelKey)}</p>
       <div style={{
         display: 'flex', gap: 14, overflowX: 'auto',
         padding: '4px 24px 8px', scrollbarWidth: 'none',
@@ -69,7 +70,7 @@ function Shelf({ label, books, onBookClick, theme }) {
   )
 }
 
-export default function EntranceScreen({ navigate, theme, currentTheme, changeTheme }) {
+export default function EntranceScreen({ navigate, theme, currentTheme, changeTheme, lang }) {
   const [selectedBook, setSelectedBook] = useState(null)
   const [search, setSearch] = useState('')
   const [showSearch, setShowSearch] = useState(false)
@@ -80,8 +81,14 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
   const [sheetY, setSheetY] = useState(0)
   const sheetTouchStart = useRef(null)
   const sheetRef = useRef(null)
+  const isRTL = lang === 'ar'
 
   const hero = books[0]
+
+  const getSummary = (book) => {
+    if (typeof book.summary === 'object') return book.summary[lang] || book.summary.en
+    return book.summary
+  }
 
   const filtered = search
     ? books.filter(b =>
@@ -114,7 +121,11 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
   const handleSheetTouchMove = (e) => {
     if (sheetTouchStart.current === null) return
     const diff = e.touches[0].clientY - sheetTouchStart.current
-    if (diff > 0) setSheetY(diff)
+    if (diff > 0) {
+      e.preventDefault()
+      e.stopPropagation()
+      setSheetY(diff)
+    }
   }
 
   const handleSheetTouchEnd = () => {
@@ -127,7 +138,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: theme.bg, paddingBottom: 100, position: 'relative', transition: 'background 0.3s' }}>
+    <div style={{ minHeight: '100vh', background: theme.bg, paddingBottom: 100, position: 'relative', transition: 'background 0.3s', direction: isRTL ? 'rtl' : 'ltr' }}>
 
       {/* Header */}
       <div style={{
@@ -159,7 +170,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
 
             {showThemePicker && (
               <div style={{
-                position: 'absolute', top: 44, right: 0,
+                position: 'absolute', top: 44, right: isRTL ? 'auto' : 0, left: isRTL ? 0 : 'auto',
                 background: currentTheme === 'night' ? '#1A1410' : theme.bg,
                 border: `1px solid ${theme.border}`,
                 borderRadius: 16, padding: 8,
@@ -180,7 +191,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                     }}
                   >
                     <span style={{ fontSize: 18 }}>{opt.icon}</span>
-                    <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13 }}>{opt.label}</span>
+                    <span style={{ fontFamily: 'var(--font-ui)', fontSize: 13 }}>{t(lang, opt.key)}</span>
                     {currentTheme === opt.key && (
                       <span style={{ marginLeft: 'auto', color: '#C9A96E', fontSize: 12 }}>✓</span>
                     )}
@@ -209,12 +220,13 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
         }}>
           <input
             autoFocus
-            placeholder="Search titles or authors..."
+            placeholder={t(lang, 'searchPlaceholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
               width: '100%', background: 'none', border: 'none',
-              outline: 'none', color: theme.text, fontSize: 15
+              outline: 'none', color: theme.text, fontSize: 15,
+              direction: isRTL ? 'rtl' : 'ltr'
             }}
           />
         </div>
@@ -226,13 +238,13 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
           <p style={{
             fontFamily: 'var(--font-ui)', fontSize: 11, color: '#C9A96E',
             letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16
-          }}>Search Results</p>
+          }}>{t(lang, 'searchResults')}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
             {filtered.map(book => (
               <BookCard key={book.id} book={book} onClick={handleBookClick} theme={theme} />
             ))}
             {filtered.length === 0 && (
-              <p style={{ color: theme.textMuted, fontSize: 14 }}>No books found.</p>
+              <p style={{ color: theme.textMuted, fontSize: 14 }}>{t(lang, 'noBooksFound')}</p>
             )}
           </div>
         </div>
@@ -255,7 +267,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               <p style={{
                 fontFamily: 'var(--font-ui)', fontSize: 10, color: '#C9A96E',
                 letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8
-              }}>Featured Today</p>
+              }}>{t(lang, 'featuredToday')}</p>
               <h2 style={{
                 fontFamily: 'var(--font-display)', fontSize: 28,
                 color: '#EDE8DF', marginBottom: 8, fontStyle: 'italic'
@@ -269,18 +281,19 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                   background: '#C9A96E', border: 'none', borderRadius: 10,
                   padding: '10px 24px', color: '#0F0C09', fontSize: 13,
                   fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-ui)'
-                }}>View Book</button>
+                }}>{t(lang, 'viewBook')}</button>
             </div>
           </div>
 
           <div style={{ paddingTop: 8 }}>
             {SHELVES.map(shelf => (
               <Shelf
-                key={shelf.label}
-                label={shelf.label}
+                key={shelf.labelKey}
+                labelKey={shelf.labelKey}
                 books={books.filter(shelf.filter)}
                 onBookClick={handleBookClick}
                 theme={theme}
+                lang={lang}
               />
             ))}
           </div>
@@ -314,11 +327,12 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               boxShadow: '0 -20px 60px rgba(0,0,0,0.6)',
               animation: sheetY === 0 ? 'slideUp 0.3s ease' : 'none',
               maxHeight: '85vh',
-              overflowY: 'auto',
-              transition: sheetY === 0 ? 'transform 0.3s ease' : 'none'
+              overflowY: sheetY > 0 ? 'hidden' : 'auto',
+              transition: sheetY === 0 ? 'transform 0.3s ease' : 'none',
+              touchAction: 'none',
+              direction: isRTL ? 'rtl' : 'ltr'
             }}>
 
-            {/* Drag Handle */}
             <div style={{
               width: 40, height: 4, background: theme.border,
               borderRadius: 2, margin: '12px auto 20px'
@@ -358,14 +372,14 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
               fontFamily: 'var(--font-body)', fontSize: 14,
               color: theme.textSecondary, lineHeight: 1.8,
               padding: '0 24px', marginBottom: 24, fontStyle: 'italic'
-            }}>{selectedBook.summary}</p>
+            }}>{getSummary(selectedBook)}</p>
 
             <div style={{
               display: 'flex', justifyContent: 'space-around',
               background: theme.bgCard, border: `1px solid ${theme.border}`,
               borderRadius: 14, margin: '0 24px 24px', padding: 16
             }}>
-              {[['Pages', selectedBook.pages], ['Loan', '21 Days'], ['Cost', 'Free']].map(([label, value]) => (
+              {[[t(lang, 'pages'), selectedBook.pages], [t(lang, 'loan'), t(lang, 'loanDays')], [t(lang, 'cost'), t(lang, 'cost')]].map(([label, value]) => (
                 <div key={label} style={{ textAlign: 'center' }}>
                   <p style={{
                     fontFamily: 'var(--font-display)', fontSize: 18,
@@ -388,7 +402,7 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                   color: '#fff', fontSize: 16, fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'var(--font-ui)',
                   boxShadow: '0 8px 24px rgba(26,107,255,0.3)'
-                }}>Borrow for 21 Days</button>
+                }}>{t(lang, 'borrowBtn')}</button>
 
               <button
                 onClick={() => toggleReadLater(selectedBook.id)}
@@ -401,13 +415,13 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
                   fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', fontFamily: 'var(--font-ui)'
                 }}>
-                {isBookSaved(selectedBook.id) ? '🔖 Saved for Later' : '🔖 Save for Later'}
+                {isBookSaved(selectedBook.id) ? `🔖 ${t(lang, 'savedForLater')}` : `🔖 ${t(lang, 'saveForLater')}`}
               </button>
 
               <p style={{
                 textAlign: 'center', fontSize: 11,
                 color: theme.textMuted, fontFamily: 'var(--font-ui)'
-              }}>1 short ad · your progress saved for 21 days</p>
+              }}>{t(lang, 'borrowNote')}</p>
             </div>
           </div>
 
