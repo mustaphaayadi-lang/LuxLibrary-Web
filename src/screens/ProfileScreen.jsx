@@ -1,53 +1,141 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { t } from '../data/translations'
 import { books } from '../data/books'
 
-const BADGES = [
-  { id: 'first', icon: '📖', label: 'First Borrow', desc: 'Borrowed your first book', condition: (stats) => stats.totalBorrowed >= 1 },
-  { id: 'streak3', icon: '🔥', label: '3 Day Streak', desc: 'Read 3 days in a row', condition: (stats) => stats.streak >= 3 },
-  { id: 'streak7', icon: '⚡', label: '7 Day Streak', desc: 'Read 7 days in a row', condition: (stats) => stats.streak >= 7 },
-  { id: 'books3', icon: '🏆', label: 'Avid Reader', desc: 'Borrowed 3 books', condition: (stats) => stats.totalBorrowed >= 3 },
-  { id: 'finished', icon: '✨', label: 'Finisher', desc: 'Finished a book', condition: (stats) => stats.totalFinished >= 1 },
+const AVATAR_LEVELS = [
+  {
+    level: 1,
+    avatar: '🌱',
+    name: { en: 'Seedling', fr: 'Graine', ar: 'بذرة' },
+    desc: { en: 'Just joined', fr: 'Nouveau membre', ar: 'عضو جديد' },
+    condition: () => true,
+  },
+  {
+    level: 2,
+    avatar: '📖',
+    name: { en: 'Reader', fr: 'Lecteur', ar: 'قارئ' },
+    desc: { en: 'Borrowed first book', fr: 'Premier emprunt', ar: 'أول استعارة' },
+    condition: (stats) => stats.totalBorrowed >= 1,
+  },
+  {
+    level: 3,
+    avatar: '🕯️',
+    name: { en: 'Scholar', fr: 'Érudit', ar: 'عالم' },
+    desc: { en: '3 day streak or finished a book', fr: 'Série de 3 jours ou livre terminé', ar: '3 أيام متتالية أو كتاب مكتمل' },
+    condition: (stats) => stats.streak >= 3 || stats.totalFinished >= 1,
+  },
+  {
+    level: 4,
+    avatar: '🦉',
+    name: { en: 'Sage', fr: 'Sage', ar: 'حكيم' },
+    desc: { en: '7 day streak and 3 books borrowed', fr: 'Série de 7 jours et 3 livres', ar: '7 أيام متتالية و3 كتب' },
+    condition: (stats) => stats.streak >= 7 && stats.totalBorrowed >= 3,
+  },
+  {
+    level: 5,
+    avatar: '🏛️',
+    name: { en: 'Curator', fr: 'Conservateur', ar: 'أمين المكتبة' },
+    desc: { en: '30 days on app and 5 books borrowed', fr: '30 jours et 5 livres empruntés', ar: '30 يوماً و5 كتب مستعارة' },
+    condition: (stats) => stats.daysOnApp >= 30 && stats.totalBorrowed >= 5,
+  },
+  {
+    level: 6,
+    avatar: '👑',
+    name: { en: 'Luminary', fr: 'Lumière', ar: 'نجم' },
+    desc: { en: '60 days on app and 3 books finished', fr: '60 jours et 3 livres terminés', ar: '60 يوماً و3 كتب مكتملة' },
+    condition: (stats) => stats.daysOnApp >= 60 && stats.totalFinished >= 3,
+  },
 ]
 
-const AVATARS = ['📚', '🦉', '🕯️', '🖋️', '🌙', '🏛️', '🎭', '🌿']
+const BADGES = [
+  { id: 'first', icon: '📖', label: 'First Borrow', condition: (s) => s.totalBorrowed >= 1 },
+  { id: 'streak3', icon: '🔥', label: '3 Day Streak', condition: (s) => s.streak >= 3 },
+  { id: 'streak7', icon: '⚡', label: '7 Day Streak', condition: (s) => s.streak >= 7 },
+  { id: 'books3', icon: '🏆', label: 'Avid Reader', condition: (s) => s.totalBorrowed >= 3 },
+  { id: 'finished', icon: '✨', label: 'Finisher', condition: (s) => s.totalFinished >= 1 },
+  { id: 'streak30', icon: '🌟', label: '30 Day Streak', condition: (s) => s.streak >= 30 },
+]
+
+function updateStreak() {
+  const today = new Date().toDateString()
+  const lastOpen = localStorage.getItem('lux_last_open')
+  const streak = parseInt(localStorage.getItem('lux_streak') || '0')
+
+  if (!lastOpen) {
+    localStorage.setItem('lux_last_open', today)
+    localStorage.setItem('lux_streak', '1')
+    return 1
+  }
+
+  const last = new Date(lastOpen)
+  const now = new Date()
+  const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return streak
+  if (diffDays === 1) {
+    const newStreak = streak + 1
+    localStorage.setItem('lux_streak', String(newStreak))
+    localStorage.setItem('lux_last_open', today)
+    return newStreak
+  }
+  // Missed a day — reset
+  localStorage.setItem('lux_streak', '1')
+  localStorage.setItem('lux_last_open', today)
+  return 1
+}
+
+function getStats() {
+  const streak = updateStreak()
+  let totalBorrowed = 0
+  let totalFinished = 0
+  let totalPages = 0
+
+  for (const book of books) {
+    const data = localStorage.getItem(`book_${book.id}`)
+    if (data) {
+      const parsed = JSON.parse(data)
+      totalBorrowed++
+      const progress = parsed.currentPage || 0
+      totalPages += progress
+      if (progress >= book.pages * 0.9) totalFinished++
+    }
+  }
+
+  const joinDate = localStorage.getItem('lux_join_date')
+  if (!joinDate) localStorage.setItem('lux_join_date', new Date().toISOString())
+  const daysOnApp = joinDate
+    ? Math.floor((new Date() - new Date(joinDate)) / (1000 * 60 * 60 * 24))
+    : 0
+
+  const points = totalBorrowed * 10 + totalFinished * 50 + streak * 5 + daysOnApp * 2
+
+  return { streak, totalBorrowed, totalFinished, totalPages, daysOnApp, points }
+}
+
+function getCurrentAvatar(stats) {
+  let current = AVATAR_LEVELS[0]
+  for (const level of AVATAR_LEVELS) {
+    if (level.condition(stats)) current = level
+  }
+  return current
+}
+
+function getNextAvatar(stats) {
+  for (const level of AVATAR_LEVELS) {
+    if (!level.condition(stats)) return level
+  }
+  return null
+}
 
 export default function ProfileScreen({ navigate, theme, lang }) {
   const isRTL = lang === 'ar'
-
-  const [username, setUsername] = useState(
-    localStorage.getItem('lux_username') || 'Reader'
-  )
+  const [username, setUsername] = useState(localStorage.getItem('lux_username') || 'Reader')
   const [editingName, setEditingName] = useState(false)
   const [tempName, setTempName] = useState(username)
-  const [avatar, setAvatar] = useState(
-    localStorage.getItem('lux_avatar') || '📚'
-  )
-  const [showAvatars, setShowAvatars] = useState(false)
+  const [stats] = useState(getStats)
 
-  // Calculate stats
-  const getStats = () => {
-    let totalBorrowed = 0
-    let totalFinished = 0
-    let totalPages = 0
-
-    for (const book of books) {
-      const data = localStorage.getItem(`book_${book.id}`)
-      if (data) {
-        const parsed = JSON.parse(data)
-        totalBorrowed++
-        if (parsed.currentPage) totalPages += parsed.currentPage
-        if (parsed.currentPage && parsed.currentPage >= book.pages - 5) totalFinished++
-      }
-    }
-
-    const streak = parseInt(localStorage.getItem('lux_streak') || '0')
-    const points = totalBorrowed * 10 + totalFinished * 50 + streak * 5
-
-    return { totalBorrowed, totalFinished, totalPages, streak, points }
-  }
-
-  const stats = getStats()
+  const currentAvatar = getCurrentAvatar(stats)
+  const nextAvatar = getNextAvatar(stats)
   const earnedBadges = BADGES.filter(b => b.condition(stats))
   const lockedBadges = BADGES.filter(b => !b.condition(stats))
 
@@ -57,11 +145,9 @@ export default function ProfileScreen({ navigate, theme, lang }) {
     setEditingName(false)
   }
 
-  const selectAvatar = (a) => {
-    setAvatar(a)
-    localStorage.setItem('lux_avatar', a)
-    setShowAvatars(false)
-  }
+  const avatarName = currentAvatar.name[lang] || currentAvatar.name.en
+  const avatarDesc = currentAvatar.desc[lang] || currentAvatar.desc.en
+  const nextAvatarName = nextAvatar ? (nextAvatar.name[lang] || nextAvatar.name.en) : null
 
   return (
     <div style={{
@@ -71,35 +157,43 @@ export default function ProfileScreen({ navigate, theme, lang }) {
 
       {/* Header */}
       <div style={{ padding: '56px 24px 32px', textAlign: 'center' }}>
+
         {/* Avatar */}
-        <div
-          onClick={() => setShowAvatars(!showAvatars)}
-          style={{
-            width: 80, height: 80, borderRadius: '50%',
-            background: 'rgba(201,169,110,0.12)',
-            border: '2px solid #C9A96E',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 36, margin: '0 auto 16px', cursor: 'pointer'
-          }}>
-          {avatar}
+        <div style={{
+          width: 90, height: 90, borderRadius: '50%',
+          background: 'rgba(201,169,110,0.12)',
+          border: '2px solid #C9A96E',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 42, margin: '0 auto 12px',
+          boxShadow: '0 0 30px rgba(201,169,110,0.15)'
+        }}>
+          {currentAvatar.avatar}
         </div>
 
-        {/* Avatar Picker */}
-        {showAvatars && (
+        {/* Avatar Level */}
+        <p style={{
+          fontSize: 11, color: '#C9A96E', letterSpacing: 2,
+          textTransform: 'uppercase', fontFamily: 'var(--font-ui)', marginBottom: 4
+        }}>{avatarName}</p>
+        <p style={{
+          fontSize: 11, color: theme.textMuted,
+          fontFamily: 'var(--font-ui)', marginBottom: 16
+        }}>{avatarDesc}</p>
+
+        {/* Next level hint */}
+        {nextAvatar && (
           <div style={{
-            display: 'flex', flexWrap: 'wrap', gap: 10,
-            justifyContent: 'center', marginBottom: 16,
-            background: theme.bgCard, border: `1px solid ${theme.border}`,
-            borderRadius: 16, padding: 16
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: theme.bgCard, border: '1px solid ' + theme.border,
+            borderRadius: 20, padding: '6px 14px', marginBottom: 16
           }}>
-            {AVATARS.map(a => (
-              <button key={a} onClick={() => selectAvatar(a)} style={{
-                width: 44, height: 44, borderRadius: 10, fontSize: 24,
-                background: avatar === a ? 'rgba(201,169,110,0.2)' : 'none',
-                border: `1px solid ${avatar === a ? '#C9A96E' : theme.border}`,
-                cursor: 'pointer'
-              }}>{a}</button>
-            ))}
+            <span style={{ fontSize: 14 }}>{nextAvatar.avatar}</span>
+            <p style={{
+              fontSize: 11, color: theme.textMuted,
+              fontFamily: 'var(--font-ui)', margin: 0
+            }}>
+              {lang === 'ar' ? 'التالي: ' : lang === 'fr' ? 'Prochain: ' : 'Next: '}{nextAvatarName}
+            </p>
           </div>
         )}
 
@@ -110,7 +204,7 @@ export default function ProfileScreen({ navigate, theme, lang }) {
               value={tempName}
               onChange={e => setTempName(e.target.value)}
               style={{
-                background: theme.bgCard, border: `1px solid ${theme.border}`,
+                background: theme.bgCard, border: '1px solid ' + theme.border,
                 borderRadius: 10, padding: '8px 14px', color: theme.text,
                 fontSize: 16, fontFamily: 'var(--font-ui)', outline: 'none',
                 textAlign: 'center'
@@ -123,7 +217,7 @@ export default function ProfileScreen({ navigate, theme, lang }) {
             }}>✓</button>
           </div>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
             <h2 style={{
               fontFamily: 'var(--font-display)', fontSize: 24,
               color: theme.text, fontStyle: 'italic', margin: 0
@@ -135,27 +229,26 @@ export default function ProfileScreen({ navigate, theme, lang }) {
           </div>
         )}
 
-        <p style={{
-          fontSize: 12, color: '#C9A96E',
-          fontFamily: 'var(--font-ui)', letterSpacing: 2
-        }}>⭐ {stats.points} pts</p>
+        <p style={{ fontSize: 12, color: '#C9A96E', fontFamily: 'var(--font-ui)', letterSpacing: 1 }}>
+          ⭐ {stats.points} pts
+        </p>
       </div>
 
       {/* Stats Row */}
       <div style={{
         display: 'flex', margin: '0 24px 32px',
-        background: theme.bgCard, border: `1px solid ${theme.border}`,
+        background: theme.bgCard, border: '1px solid ' + theme.border,
         borderRadius: 20, overflow: 'hidden'
       }}>
         {[
-          ['🔥', stats.streak, lang === 'ar' ? 'أيام متتالية' : lang === 'fr' ? 'Jours' : 'Day Streak'],
-          ['📖', stats.totalBorrowed, lang === 'ar' ? 'كتب' : lang === 'fr' ? 'Livres' : 'Books'],
+          ['🔥', stats.streak, lang === 'ar' ? 'تتالي' : lang === 'fr' ? 'Série' : 'Streak'],
+          ['📚', stats.totalBorrowed, lang === 'ar' ? 'كتب' : lang === 'fr' ? 'Livres' : 'Books'],
           ['✅', stats.totalFinished, lang === 'ar' ? 'أتممت' : lang === 'fr' ? 'Finis' : 'Finished'],
-          ['📄', stats.totalPages, lang === 'ar' ? 'صفحات' : lang === 'fr' ? 'Pages' : 'Pages'],
+          ['📅', stats.daysOnApp, lang === 'ar' ? 'أيام' : lang === 'fr' ? 'Jours' : 'Days'],
         ].map(([icon, value, label]) => (
           <div key={label} style={{
             flex: 1, padding: '20px 8px', textAlign: 'center',
-            borderRight: `1px solid ${theme.border}`
+            borderRight: '1px solid ' + theme.border
           }}>
             <p style={{ fontSize: 20, marginBottom: 4 }}>{icon}</p>
             <p style={{
@@ -178,34 +271,27 @@ export default function ProfileScreen({ navigate, theme, lang }) {
         }}>
           {lang === 'ar' ? 'الشارات' : lang === 'fr' ? 'Badges' : 'Badges'}
         </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {earnedBadges.map(badge => (
             <div key={badge.id} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              background: 'rgba(201,169,110,0.1)',
-              border: '1px solid rgba(201,169,110,0.3)',
-              borderRadius: 12, padding: '10px 14px'
+              display: 'flex', alignItems: 'center', gap: 12,
+              background: 'rgba(201,169,110,0.08)',
+              border: '1px solid rgba(201,169,110,0.25)',
+              borderRadius: 14, padding: '12px 16px'
             }}>
-              <span style={{ fontSize: 20 }}>{badge.icon}</span>
-              <div>
-                <p style={{ fontSize: 12, color: '#C9A96E', fontFamily: 'var(--font-ui)', fontWeight: 600, margin: 0 }}>{badge.label}</p>
-                <p style={{ fontSize: 10, color: theme.textMuted, fontFamily: 'var(--font-ui)', margin: 0 }}>{badge.desc}</p>
-              </div>
+              <span style={{ fontSize: 22 }}>{badge.icon}</span>
+              <p style={{ fontSize: 13, color: '#C9A96E', fontFamily: 'var(--font-ui)', fontWeight: 600, margin: 0 }}>{badge.label}</p>
+              <span style={{ marginLeft: 'auto', color: '#C9A96E', fontSize: 12 }}>✓</span>
             </div>
           ))}
           {lockedBadges.map(badge => (
             <div key={badge.id} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              background: theme.bgCard,
-              border: `1px solid ${theme.border}`,
-              borderRadius: 12, padding: '10px 14px',
-              opacity: 0.4
+              display: 'flex', alignItems: 'center', gap: 12,
+              background: theme.bgCard, border: '1px solid ' + theme.border,
+              borderRadius: 14, padding: '12px 16px', opacity: 0.4
             }}>
-              <span style={{ fontSize: 20, filter: 'grayscale(1)' }}>{badge.icon}</span>
-              <div>
-                <p style={{ fontSize: 12, color: theme.textMuted, fontFamily: 'var(--font-ui)', fontWeight: 600, margin: 0 }}>🔒 {badge.label}</p>
-                <p style={{ fontSize: 10, color: theme.textMuted, fontFamily: 'var(--font-ui)', margin: 0 }}>{badge.desc}</p>
-              </div>
+              <span style={{ fontSize: 22, filter: 'grayscale(1)' }}>{badge.icon}</span>
+              <p style={{ fontSize: 13, color: theme.textMuted, fontFamily: 'var(--font-ui)', margin: 0 }}>🔒 {badge.label}</p>
             </div>
           ))}
         </div>
@@ -242,16 +328,17 @@ export default function ProfileScreen({ navigate, theme, lang }) {
             return (
               <div key={book.id} onClick={() => navigate('reader', { book })} style={{
                 display: 'flex', gap: 12, alignItems: 'center',
-                background: theme.bgCard, border: `1px solid ${theme.border}`,
+                background: theme.bgCard, border: '1px solid ' + theme.border,
                 borderRadius: 14, padding: 14, marginBottom: 10, cursor: 'pointer'
               }}>
                 <img src={book.cover} alt={book.title} style={{
-                  width: 44, height: 64, objectFit: 'cover', borderRadius: 6
+                  width: 44, height: 64, objectFit: 'cover', borderRadius: 6,
+                  flexShrink: 0
                 }} />
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: theme.text, fontStyle: 'italic', margin: '0 0 4px' }}>{book.title}</p>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: theme.text, fontStyle: 'italic', margin: '0 0 6px' }}>{book.title}</p>
                   <div style={{ height: 3, background: theme.border, borderRadius: 2, marginBottom: 4 }}>
-                    <div style={{ height: '100%', width: `${progress}%`, background: '#C9A96E', borderRadius: 2 }} />
+                    <div style={{ height: '100%', width: progress + '%', background: '#C9A96E', borderRadius: 2 }} />
                   </div>
                   <p style={{ fontSize: 11, color: theme.textMuted, fontFamily: 'var(--font-ui)', margin: 0 }}>{progress}%</p>
                 </div>
@@ -259,21 +346,6 @@ export default function ProfileScreen({ navigate, theme, lang }) {
             )
           })
         )}
-      </div>
-
-      {/* Go to Settings */}
-      <div style={{ padding: '0 24px' }}>
-        <button
-          onClick={() => navigate('settings')}
-          style={{
-            width: '100%', padding: '14px 0',
-            background: theme.bgCard, border: `1px solid ${theme.border}`,
-            borderRadius: 14, color: theme.textSecondary,
-            fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-ui)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
-          }}>
-          ⚙️ {lang === 'ar' ? 'الإعدادات' : lang === 'fr' ? 'Paramètres' : 'Settings'}
-        </button>
       </div>
     </div>
   )
