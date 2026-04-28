@@ -181,7 +181,17 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
             <div style={{ width: 10, height: 2, background: '#C9A96E', borderRadius: 1 }} />
           </button>
 
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <button onClick={() => navigate('profile')} style={{
+            background: 'linear-gradient(135deg, #2C1810, #1A0F08)',
+            border: '1px solid #C9A96E',
+            borderRadius: 10, width: 38, height: 38,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 2px 12px rgba(201,169,110,0.2)'
+          }}>
+            <span style={{ fontSize: 18 }}>🪪</span>
+          </button>
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => { setShowThemePicker(!showThemePicker); setShowSearch(false) }}
