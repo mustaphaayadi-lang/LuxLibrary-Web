@@ -118,7 +118,7 @@ export default function App() {
               alignItems: 'center', gap: 1, fontFamily: 'var(--font-ui)',
               padding: '1px 0'
             }}>
-              <span style={{ fontSize: 12 }}>{tab.icon}</span>
+              <span style={{ fontSize: 17 }}>{tab.icon}</span>
               {tab.label}
             </button>
           ))}
