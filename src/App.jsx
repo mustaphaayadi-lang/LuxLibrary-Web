@@ -114,11 +114,11 @@ export default function App() {
             <button key={tab.key} onClick={() => navigate(tab.key)} style={{
               flex: 1, background: 'none', border: 'none', cursor: 'pointer',
               color: screen === tab.key ? '#C9A96E' : tr.textMuted,
-              fontSize: 9, display: 'flex', flexDirection: 'column',
-              alignItems: 'center', gap: 2, fontFamily: 'var(--font-ui)',
-              padding: '2px 0'
+              fontSize: 8, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', gap: 1, fontFamily: 'var(--font-ui)',
+              padding: '1px 0'
             }}>
-              <span style={{ fontSize: 16 }}>{tab.icon}</span>
+              <span style={{ fontSize: 14 }}>{tab.icon}</span>
               {tab.label}
             </button>
           ))}
