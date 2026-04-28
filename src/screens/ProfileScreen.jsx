@@ -242,7 +242,7 @@ export default function ProfileScreen({ navigate, theme, lang }) {
       }}>
         {[
           ['🔥', stats.streak, lang === 'ar' ? 'تتالي' : lang === 'fr' ? 'Série' : 'Streak'],
-          ['📚', stats.totalBorrowed, lang === 'ar' ? 'كتب' : lang === 'fr' ? 'Livres' : 'Books'],
+          ['📚', stats.totalBorrowed, lang === 'ar' ? 'مستعارة' : lang === 'fr' ? 'Empruntés' : 'Borrowed'],
           ['✅', stats.totalFinished, lang === 'ar' ? 'أتممت' : lang === 'fr' ? 'Finis' : 'Finished'],
           ['📅', stats.daysOnApp, lang === 'ar' ? 'أيام' : lang === 'fr' ? 'Jours' : 'Days'],
         ].map(([icon, value, label]) => (
