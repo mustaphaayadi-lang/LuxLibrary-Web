@@ -81,6 +81,7 @@ export default function App() {
     { key: 'entrance', icon: '📖', label: t(lang, 'library') },
     { key: 'readlater', icon: '🔖', label: t(lang, 'readLater') },
     { key: 'table', icon: '🪑', label: t(lang, 'myTable') },
+    { key: 'profile', icon: '👤', label: 'Profile' },
     { key: 'settings', icon: '⚙️', label: 'Settings' },
   ]
 
@@ -106,10 +107,8 @@ export default function App() {
           width: '100%', maxWidth: 430, display: 'flex',
           backgroundColor: tr.navBg,
           borderTop: '1px solid ' + tr.border,
-          paddingTop: 10,
-          paddingBottom: 28,
-          zIndex: 100,
-          transition: 'background 0.3s',
+          paddingTop: 10, paddingBottom: 28,
+          zIndex: 100, transition: 'background 0.3s',
         }}>
           {TABS.map(tab => (
             <button key={tab.key} onClick={() => navigate(tab.key)} style={{
