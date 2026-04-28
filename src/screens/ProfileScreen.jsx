@@ -347,6 +347,20 @@ export default function ProfileScreen({ navigate, theme, lang }) {
           })
         )}
       </div>
+    {/* Settings Button */}
+      <div style={{ padding: '0 24px 32px' }}>
+        <button
+          onClick={() => navigate('settings')}
+          style={{
+            width: '100%', padding: '14px 0',
+            background: theme.bgCard, border: '1px solid ' + theme.border,
+            borderRadius: 14, color: theme.textSecondary,
+            fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-ui)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+          }}>
+          ⚙️ {t(lang, 'settings')}
+        </button>
+      </div>
     </div>
   )
 }
