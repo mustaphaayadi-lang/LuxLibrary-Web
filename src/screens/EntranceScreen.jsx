@@ -176,7 +176,10 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
             borderRadius: '50%', width: 36, height: 36,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer', fontSize: 16
-          }}>👤</button>
+          }}>
+            <div style={{ width: 16, height: 2, background: '#C9A96E', borderRadius: 1 }} />
+            <div style={{ width: 10, height: 2, background: '#C9A96E', borderRadius: 1 }} />
+          </button>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <div style={{ position: 'relative' }}>
