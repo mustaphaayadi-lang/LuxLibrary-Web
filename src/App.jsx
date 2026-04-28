@@ -82,7 +82,6 @@ export default function App() {
     { key: 'readlater', icon: '🔖', label: t(lang, 'readLater') },
     { key: 'table', icon: '🪑', label: t(lang, 'myTable') },
     { key: 'profile', icon: '👤', label: t(lang, 'profile') },
-    { key: 'settings', icon: '⚙️', label: t(lang, 'settings') },
   ]
 
   return (
@@ -107,7 +106,7 @@ export default function App() {
           width: '100%', maxWidth: 430, display: 'flex',
           backgroundColor: tr.navBg,
           borderTop: '1px solid ' + tr.border,
-          paddingTop: 7, paddingBottom: 25,
+          paddingTop: 4, paddingBottom: 8, height: 52,
           zIndex: 100, transition: 'background 0.3s',
         }}>
           {TABS.map(tab => (
