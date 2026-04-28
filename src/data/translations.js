@@ -1,23 +1,17 @@
 export const translations = {
   en: {
-    // App
     appName: 'LuxLibrary',
     tagline: 'Your private reading room',
-
-    // Navigation
     library: 'Library',
     myTable: 'My Table',
     readLater: 'Read Later',
     settings: 'Settings',
-
-    // Entrance
+    profile: 'Profile',
     featuredToday: 'Featured Today',
     viewBook: 'View Book',
     searchPlaceholder: 'Search titles or authors...',
     searchResults: 'Search Results',
     noBooksFound: 'No books found.',
-
-    // Shelves
     shelfFeatured: 'Featured Today',
     shelfClassic: 'Classic Literature',
     shelfVictorian: 'Victorian Era',
@@ -26,14 +20,10 @@ export const translations = {
     shelfRussian: 'Russian Giants',
     shelfShort: 'Short Reads',
     shelfArabic: 'Arabic Classics',
-
-    // Theme
     night: 'Night',
     paper: 'Paper',
     day: 'Day',
     readingMode: 'Reading Mode',
-
-    // Book Sheet
     borrowBtn: 'Borrow for 21 Days',
     saveForLater: 'Save for Later',
     savedForLater: 'Saved for Later',
@@ -43,8 +33,6 @@ export const translations = {
     cost: 'Free',
     loanDays: '21 Days',
     aboutBook: 'About this book',
-
-    // Table
     yourCollection: 'Your Collection',
     myTableTitle: 'My Table',
     yourActiveLoans: 'Your active loans',
@@ -59,16 +47,12 @@ export const translations = {
     returnBook: 'Return',
     returnConfirm: 'Return this book to the library?',
     readingProgress: 'Reading progress',
-
-    // Read Later
     yourWishlist: 'Your Wishlist',
     readLaterTitle: 'Read Later',
     nothingSaved: 'Nothing saved yet',
     nothingSavedDesc: 'Browse the library and save books you want to read later.',
     borrowNow: 'Borrow Now',
     remove: 'Remove',
-
-    // Reader
     openingBook: 'Opening your book...',
     couldNotLoad: 'Could not load this book. Try again later.',
     loanExpiredTitle: 'Your loan has expired',
@@ -79,8 +63,6 @@ export const translations = {
     fontSize: 'Font Size',
     brightness: 'Brightness',
     tapToHide: 'Tap anywhere to hide UI',
-
-    // Onboarding
     step: 'Step',
     of: 'of',
     continue: 'Continue →',
@@ -94,8 +76,6 @@ export const translations = {
     timeSubtitle: 'We will suggest the right book length',
     langQuestion2: 'Which book languages do you enjoy?',
     langSubtitle2: 'We will curate your shelves accordingly',
-
-    // Settings
     settingsTitle: 'Settings',
     appLanguage: 'App Language',
     requestBook: 'Request a Book',
@@ -108,15 +88,11 @@ export const translations = {
     about: 'About LuxLibrary',
     aboutDesc: 'A luxury reading experience for the discerning reader.',
     version: 'Version 1.0',
-
-    // Languages
     english: 'English',
     french: 'French',
     arabic: 'Arabic',
     russian: 'Russian',
     german: 'German',
-
-    // Book language badges
     langBadgeEn: 'English',
     langBadgeFr: 'French',
     langBadgeRu: 'Russian',
@@ -127,18 +103,16 @@ export const translations = {
   fr: {
     appName: 'LuxLibrary',
     tagline: 'Votre salle de lecture privée',
-
     library: 'Bibliothèque',
     myTable: 'Ma Table',
     readLater: 'À lire',
     settings: 'Paramètres',
-
+    profile: 'Profil',
     featuredToday: 'À la une',
     viewBook: 'Voir le livre',
     searchPlaceholder: 'Rechercher titres ou auteurs...',
     searchResults: 'Résultats',
     noBooksFound: 'Aucun livre trouvé.',
-
     shelfFeatured: 'À la une',
     shelfClassic: 'Littérature classique',
     shelfVictorian: 'Ère victorienne',
@@ -147,12 +121,10 @@ export const translations = {
     shelfRussian: 'Géants russes',
     shelfShort: 'Lectures courtes',
     shelfArabic: 'Classiques arabes',
-
     night: 'Nuit',
     paper: 'Papier',
     day: 'Jour',
     readingMode: 'Mode de lecture',
-
     borrowBtn: 'Emprunter pour 21 jours',
     saveForLater: 'Sauvegarder pour plus tard',
     savedForLater: 'Sauvegardé',
@@ -162,7 +134,6 @@ export const translations = {
     cost: 'Gratuit',
     loanDays: '21 Jours',
     aboutBook: 'À propos du livre',
-
     yourCollection: 'Votre collection',
     myTableTitle: 'Ma Table',
     yourActiveLoans: 'Vos emprunts actifs',
@@ -177,14 +148,12 @@ export const translations = {
     returnBook: 'Retourner',
     returnConfirm: 'Retourner ce livre à la bibliothèque ?',
     readingProgress: 'Progression',
-
     yourWishlist: 'Votre liste',
     readLaterTitle: 'À lire',
     nothingSaved: 'Rien de sauvegardé',
     nothingSavedDesc: 'Parcourez la bibliothèque et sauvegardez des livres.',
     borrowNow: 'Emprunter',
     remove: 'Supprimer',
-
     openingBook: 'Ouverture du livre...',
     couldNotLoad: 'Impossible de charger ce livre. Réessayez plus tard.',
     loanExpiredTitle: 'Votre prêt a expiré',
@@ -195,7 +164,6 @@ export const translations = {
     fontSize: 'Taille de police',
     brightness: 'Luminosité',
     tapToHide: 'Appuyez pour masquer l\'interface',
-
     step: 'Étape',
     of: 'sur',
     continue: 'Continuer →',
@@ -209,7 +177,6 @@ export const translations = {
     timeSubtitle: 'Nous suggérerons la bonne longueur de livre',
     langQuestion2: 'Quelles langues de livres appréciez-vous ?',
     langSubtitle2: 'Nous personnaliserons vos étagères',
-
     settingsTitle: 'Paramètres',
     appLanguage: 'Langue de l\'application',
     requestBook: 'Demander un livre',
@@ -222,13 +189,11 @@ export const translations = {
     about: 'À propos de LuxLibrary',
     aboutDesc: 'Une expérience de lecture luxueuse pour le lecteur exigeant.',
     version: 'Version 1.0',
-
     english: 'Anglais',
     french: 'Français',
     arabic: 'Arabe',
     russian: 'Russe',
     german: 'Allemand',
-
     langBadgeEn: 'Anglais',
     langBadgeFr: 'Français',
     langBadgeRu: 'Russe',
@@ -239,18 +204,16 @@ export const translations = {
   ar: {
     appName: 'LuxLibrary',
     tagline: 'غرفة قراءتك الخاصة',
-
     library: 'المكتبة',
     myTable: 'طاولتي',
     readLater: 'اقرأ لاحقاً',
     settings: 'الإعدادات',
-
+    profile: 'الملف الشخصي',
     featuredToday: 'مميز اليوم',
     viewBook: 'عرض الكتاب',
     searchPlaceholder: 'ابحث عن عناوين أو مؤلفين...',
     searchResults: 'نتائج البحث',
     noBooksFound: 'لم يتم العثور على كتب.',
-
     shelfFeatured: 'مميز اليوم',
     shelfClassic: 'الأدب الكلاسيكي',
     shelfVictorian: 'العصر الفيكتوري',
@@ -259,12 +222,10 @@ export const translations = {
     shelfRussian: 'العمالقة الروس',
     shelfShort: 'قراءات قصيرة',
     shelfArabic: 'الكلاسيكيات العربية',
-
     night: 'ليل',
     paper: 'ورق',
     day: 'نهار',
     readingMode: 'وضع القراءة',
-
     borrowBtn: 'استعارة لمدة 21 يوماً',
     saveForLater: 'حفظ للقراءة لاحقاً',
     savedForLater: 'تم الحفظ',
@@ -274,7 +235,6 @@ export const translations = {
     cost: 'مجاناً',
     loanDays: '21 يوماً',
     aboutBook: 'عن هذا الكتاب',
-
     yourCollection: 'مجموعتك',
     myTableTitle: 'طاولتي',
     yourActiveLoans: 'إعاراتك النشطة',
@@ -289,14 +249,12 @@ export const translations = {
     returnBook: 'إرجاع',
     returnConfirm: 'هل تريد إرجاع هذا الكتاب إلى المكتبة؟',
     readingProgress: 'تقدم القراءة',
-
     yourWishlist: 'قائمة رغباتك',
     readLaterTitle: 'اقرأ لاحقاً',
     nothingSaved: 'لا شيء محفوظ بعد',
     nothingSavedDesc: 'تصفح المكتبة واحفظ الكتب التي تريد قراءتها لاحقاً.',
     borrowNow: 'استعر الآن',
     remove: 'إزالة',
-
     openingBook: 'جارٍ فتح كتابك...',
     couldNotLoad: 'تعذر تحميل هذا الكتاب. حاول مرة أخرى لاحقاً.',
     loanExpiredTitle: 'انتهت مدة الإعارة',
@@ -307,7 +265,6 @@ export const translations = {
     fontSize: 'حجم الخط',
     brightness: 'السطوع',
     tapToHide: 'اضغط في أي مكان لإخفاء الواجهة',
-
     step: 'خطوة',
     of: 'من',
     continue: 'متابعة →',
@@ -321,7 +278,6 @@ export const translations = {
     timeSubtitle: 'سنقترح الطول المناسب للكتاب',
     langQuestion2: 'ما لغات الكتب التي تستمتع بها؟',
     langSubtitle2: 'سنخصص رفوفك وفقاً لذلك',
-
     settingsTitle: 'الإعدادات',
     appLanguage: 'لغة التطبيق',
     requestBook: 'طلب كتاب',
@@ -334,13 +290,11 @@ export const translations = {
     about: 'عن LuxLibrary',
     aboutDesc: 'تجربة قراءة فاخرة للقارئ المتميز.',
     version: 'الإصدار 1.0',
-
     english: 'الإنجليزية',
     french: 'الفرنسية',
     arabic: 'العربية',
     russian: 'الروسية',
     german: 'الألمانية',
-
     langBadgeEn: 'إنجليزي',
     langBadgeFr: 'فرنسي',
     langBadgeRu: 'روسي',

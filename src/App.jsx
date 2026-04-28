@@ -81,8 +81,8 @@ export default function App() {
     { key: 'entrance', icon: '📖', label: t(lang, 'library') },
     { key: 'readlater', icon: '🔖', label: t(lang, 'readLater') },
     { key: 'table', icon: '🪑', label: t(lang, 'myTable') },
-    { key: 'profile', icon: '👤', label: 'Profile' },
-    { key: 'settings', icon: '⚙️', label: 'Settings' },
+    { key: 'profile', icon: '👤', label: t(lang, 'profile') },
+    { key: 'settings', icon: '⚙️', label: t(lang, 'settings') },
   ]
 
   return (
