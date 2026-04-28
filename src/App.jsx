@@ -80,7 +80,7 @@ export default function App() {
   const TABS = [
     { key: 'entrance', icon: '📖', label: t(lang, 'library') },
     { key: 'readlater', icon: '🔖', label: t(lang, 'readLater') },
-    { key: 'profile', icon: '👤', label: 'Profile' },
+    { key: 'table', icon: '🪑', label: t(lang, 'myTable') },
     { key: 'settings', icon: '⚙️', label: 'Settings' },
   ]
 

@@ -170,6 +170,13 @@ export default function EntranceScreen({ navigate, theme, currentTheme, changeTh
           fontFamily: 'var(--font-display)', fontSize: 24,
           color: '#8B6F47', letterSpacing: 1, fontWeight: 600
         }}>LuxLibrary</h1>
+          <button onClick={() => navigate('profile')} style={{
+            background: 'rgba(201,169,110,0.12)',
+            border: '1px solid rgba(201,169,110,0.3)',
+            borderRadius: '50%', width: 36, height: 36,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', fontSize: 16
+          }}>👤</button>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <div style={{ position: 'relative' }}>
