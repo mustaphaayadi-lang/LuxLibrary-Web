@@ -107,7 +107,7 @@ export default function App() {
           width: '100%', maxWidth: 430, display: 'flex',
           backgroundColor: tr.navBg,
           borderTop: '1px solid ' + tr.border,
-          paddingTop: 10, paddingBottom: 28,
+          paddingTop: 7, paddingBottom: 25,
           zIndex: 100, transition: 'background 0.3s',
         }}>
           {TABS.map(tab => (
