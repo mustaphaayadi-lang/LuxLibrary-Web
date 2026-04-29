@@ -124,6 +124,7 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
       setAnimDir(null)
       setAnimating(false)
       if (contentRef.current) contentRef.current.scrollTop = 0
+      window.scrollTo(0, 0)
     }, 250)
   }
 
