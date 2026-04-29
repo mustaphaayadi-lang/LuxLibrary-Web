@@ -69,16 +69,13 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [showUI, setShowUI] = useState(true)
-  const [showSearch, setShowSearch] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResult, setSearchResult] = useState(null)
-  const [animDir, setAnimDir] = useState(null)
   const [animating, setAnimating] = useState(false)
   const [theme, setTheme] = useState(globalTheme || 'night')
   const [fontSize, setFontSize] = useState(17)
   const [brightness, setBrightness] = useState(100)
   const touchStartX = useRef(null)
+  const touchStartY = useRef(null)
   const scrollContainerRef = useRef(null)
   const t = THEMES[theme]
 
@@ -88,10 +85,6 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
     if (pages.length > 0) {
       const data = JSON.parse(localStorage.getItem(`book_${book.id}`) || '{}')
       localStorage.setItem(`book_${book.id}`, JSON.stringify({ ...data, currentPage }))
-      // Reset scroll to top
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0
-      }
     }
   }, [currentPage])
 
@@ -119,34 +112,27 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
     if (animating) return
     if (dir === 'next' && currentPage >= pages.length - 1) return
     if (dir === 'prev' && currentPage <= 0) return
-    setAnimDir(dir)
     setAnimating(true)
-    setTimeout(() => {
-      setCurrentPage(p => dir === 'next' ? p + 1 : p - 1)
-      setAnimDir(null)
-      setAnimating(false)
-    }, 250)
+    setCurrentPage(p => dir === 'next' ? p + 1 : p - 1)
+    setTimeout(() => setAnimating(false), 100)
   }
 
-  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX }
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+  }
+
   const handleTouchEnd = (e) => {
     if (touchStartX.current === null) return
-    const diff = touchStartX.current - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 50) goToPage(diff > 0 ? 'next' : 'prev')
-    touchStartX.current = null
-  }
+    const diffX = touchStartX.current - e.changedTouches[0].clientX
+    const diffY = Math.abs(touchStartY.current - e.changedTouches[0].clientY)
 
-  const handleSearch = () => {
-    if (!searchQuery.trim()) return
-    const found = pages.findIndex(p => p.toLowerCase().includes(searchQuery.toLowerCase()))
-    if (found !== -1) {
-      setCurrentPage(found)
-      setSearchResult(`Found on page ${found + 1}`)
-      setShowSearch(false)
-      setSearchQuery('')
-    } else {
-      setSearchResult('Not found in this book')
+    // Only swipe if horizontal movement is dominant
+    if (Math.abs(diffX) > 50 && Math.abs(diffX) > diffY) {
+      goToPage(diffX > 0 ? 'next' : 'prev')
     }
+    touchStartX.current = null
+    touchStartY.current = null
   }
 
   const isExpired = () => {
@@ -160,19 +146,13 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
   const expired = isExpired()
   const progress = pages.length > 0 ? Math.round(((currentPage + 1) / pages.length) * 100) : 0
 
-  const getPageStyle = () => ({
-    opacity: animDir ? 0 : 1,
-    transform: animDir ? `translateX(${animDir === 'next' ? '-30px' : '30px'})` : 'translateX(0)',
-    transition: animDir ? 'all 0.25s ease' : 'none'
-  })
-
   return (
     <div style={{
-      height: '100vh',
-      background: t.bg,
-      position: 'relative',
-      overflow: 'hidden',
-      filter: `brightness(${brightness}%)`
+      height: '100vh', width: '100%',
+      background: t.bg, position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      filter: `brightness(${brightness}%)`,
+      overflow: 'hidden'
     }}>
 
       {/* Top Bar */}
@@ -182,7 +162,6 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
           padding: '48px 20px 12px',
           background: `linear-gradient(${t.bg} 70%, transparent)`,
           zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          filter: `brightness(${100 / brightness * 100}%)`
         }}>
           <button onClick={() => navigate('table')} style={{
             background: 'none', border: 'none', color: '#C9A96E',
@@ -193,48 +172,9 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
             margin: 0, fontStyle: 'italic', maxWidth: 160, textAlign: 'center',
             overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'
           }}>{book.title}</p>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={(e) => { e.stopPropagation(); setShowSearch(!showSearch); setShowSettings(false) }} style={{
-              background: 'none', border: 'none', color: t.ui, fontSize: 16, cursor: 'pointer'
-            }}>🔍</button>
-            <button onClick={(e) => { e.stopPropagation(); setShowSettings(!showSettings); setShowSearch(false) }} style={{
-              background: 'none', border: 'none', color: t.ui, fontSize: 16, cursor: 'pointer'
-            }}>⚙️</button>
-          </div>
-        </div>
-      )}
-
-      {/* Search Panel */}
-      {showSearch && (
-        <div style={{
-          position: 'absolute', top: 110, left: '50%', transform: 'translateX(-50%)',
-          width: '90%', maxWidth: 390, zIndex: 20,
-          background: theme === 'night' ? '#1A1410' : t.bg,
-          border: `1px solid ${t.border}`, borderRadius: 14, padding: 16,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.4)'
-        }}>
-          <input
-            autoFocus
-            placeholder="Search a word or phrase..."
-            value={searchQuery}
-            onChange={e => { setSearchQuery(e.target.value); setSearchResult(null) }}
-            onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            style={{
-              width: '100%', background: 'none', border: 'none',
-              outline: 'none', color: t.text, fontSize: 15, marginBottom: 10
-            }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            {searchResult && (
-              <p style={{ fontSize: 12, color: searchResult.includes('Not') ? '#ff6b6b' : '#C9A96E', margin: 0 }}>
-                {searchResult}
-              </p>
-            )}
-            <button onClick={handleSearch} style={{
-              marginLeft: 'auto', background: '#1a6bff', border: 'none',
-              borderRadius: 8, padding: '8px 16px', color: '#fff', fontSize: 13, cursor: 'pointer'
-            }}>Search</button>
-          </div>
+          <button onClick={(e) => { e.stopPropagation(); setShowSettings(!showSettings) }} style={{
+            background: 'none', border: 'none', color: t.ui, fontSize: 16, cursor: 'pointer'
+          }}>⚙️</button>
         </div>
       )}
 
@@ -292,34 +232,35 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         </div>
       )}
 
-      {/* Scrollable Content Container */}
+      {/* Page Content — key forces full remount on page change = instant scroll reset */}
       <div
+        key={currentPage}
         ref={scrollContainerRef}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onClick={() => { if (!showSearch && !showSettings) setShowUI(!showUI) }}
+        onClick={() => { if (!showSettings) setShowUI(!showUI) }}
         style={{
-          height: '100vh',
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
           overflowY: 'auto',
-          padding: '110px 28px 130px',
+          padding: '110px 28px 80px',
           cursor: 'pointer',
           WebkitOverflowScrolling: 'touch',
         }}
       >
         {loading && (
-          <div style={{ textAlign: 'center', paddingTop: 100 }}>
+          <div style={{ textAlign: 'center', paddingTop: 150 }}>
             <p style={{ color: t.ui, fontSize: 14, fontFamily: 'var(--font-ui)' }}>Opening your book...</p>
           </div>
         )}
 
         {error && (
-          <div style={{ textAlign: 'center', paddingTop: 100 }}>
+          <div style={{ textAlign: 'center', paddingTop: 150 }}>
             <p style={{ color: t.ui, fontSize: 14, fontFamily: 'var(--font-ui)' }}>Could not load this book. Try again later.</p>
           </div>
         )}
 
         {!loading && !error && expired && (
-          <div style={{ textAlign: 'center', paddingTop: 100 }}>
+          <div style={{ textAlign: 'center', paddingTop: 150 }}>
             <p style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: t.text, marginBottom: 12, fontStyle: 'italic' }}>Your loan has expired</p>
             <p style={{ fontSize: 14, color: t.ui, marginBottom: 24, fontFamily: 'var(--font-ui)' }}>Watch 2 ads to renew access instantly</p>
             <button onClick={() => navigate('table')} style={{
@@ -332,53 +273,29 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
 
         {!loading && !error && !expired && pages.length > 0 && (
           <div style={{
-            ...getPageStyle(),
-            fontSize: fontSize,
-            lineHeight: 1.95,
-            color: t.text,
-            fontFamily: 'var(--font-body)',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
+            fontSize: fontSize, lineHeight: 1.95, color: t.text,
+            fontFamily: 'var(--font-body)', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
           }}>
             {pages[currentPage]}
           </div>
         )}
       </div>
 
-      {/* Bottom Bar */}
-      {showUI && !loading && !error && pages.length > 0 && (
+      {/* Bottom Progress Bar — always visible, minimal */}
+      {!loading && !error && pages.length > 0 && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
-          padding: '16px 24px 32px',
-          background: `linear-gradient(transparent, ${t.bg} 40%)`,
-          zIndex: 10,
-          filter: `brightness(${100 / brightness * 100}%)`
+          padding: '8px 24px 16px',
+          background: `linear-gradient(transparent, ${t.bg} 60%)`,
+          zIndex: 10, pointerEvents: 'none'
         }}>
-          <div style={{ height: 1, background: t.border, borderRadius: 1, marginBottom: 16 }}>
-            <div style={{ height: '100%', width: `${progress}%`, background: '#C9A96E', borderRadius: 1, transition: 'width 0.3s' }} />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <button
-              onClick={(e) => { e.stopPropagation(); goToPage('prev') }}
-              disabled={currentPage === 0}
-              style={{
-                background: 'none', border: `1px solid ${t.border}`, borderRadius: 10,
-                padding: '10px 20px', color: currentPage === 0 ? t.border : t.text,
-                fontSize: 13, cursor: currentPage === 0 ? 'default' : 'pointer',
-                fontFamily: 'var(--font-ui)'
-              }}>← Prev</button>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6 }}>
             <p style={{ fontSize: 11, color: t.ui, margin: 0, fontFamily: 'var(--font-ui)' }}>
               {currentPage + 1} / {pages.length} · {progress}%
             </p>
-            <button
-              onClick={(e) => { e.stopPropagation(); goToPage('next') }}
-              disabled={currentPage === pages.length - 1}
-              style={{
-                background: 'none', border: `1px solid ${t.border}`, borderRadius: 10,
-                padding: '10px 20px', color: currentPage === pages.length - 1 ? t.border : t.text,
-                fontSize: 13, cursor: currentPage === pages.length - 1 ? 'default' : 'pointer',
-                fontFamily: 'var(--font-ui)'
-              }}>Next →</button>
+          </div>
+          <div style={{ height: 1, background: t.border, borderRadius: 1 }}>
+            <div style={{ height: '100%', width: `${progress}%`, background: '#C9A96E', borderRadius: 1, transition: 'width 0.3s' }} />
           </div>
         </div>
       )}
