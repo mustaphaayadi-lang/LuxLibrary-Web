@@ -124,7 +124,7 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
       setAnimDir(null)
       setAnimating(false)
       if (contentRef.current) contentRef.current.scrollTop = 0
-      window.scrollTo(0, 0)
+      window.scrollTo({ top: 0, behavior: 'instant' })
     }, 250)
   }
 
@@ -292,7 +292,7 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClick={() => { if (!showSearch && !showSettings) setShowUI(!showUI) }}
-        style={{ padding: '110px 28px 130px', maxWidth: 430, margin: '0 auto', cursor: 'pointer' }}
+        style={{ padding: '110px 28px 130px', maxWidth: 430, margin: '0 auto', cursor: 'pointer', minHeight: '100vh' }}
       >
         {loading && (
           <div style={{ textAlign: 'center', paddingTop: 100 }}>
