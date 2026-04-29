@@ -42,14 +42,12 @@ function paginateText(text) {
 }
 
 function cleanText(raw) {
-  // Remove Gutenberg header/footer
   const start = raw.indexOf('*** START OF')
   const end = raw.indexOf('*** END OF')
   let cleaned = start !== -1 && end !== -1
     ? raw.slice(raw.indexOf('\n', start) + 1, end).trim()
     : raw.trim()
 
-  // Skip to Chapter 1
   const chapterMarkers = [
     'Chapter I\n', 'CHAPTER I\n', 'Chapter 1\n', 'CHAPTER 1\n',
     'CHAPTER ONE\n', 'Chapter One\n', 'PART I\n', 'Part I\n',
@@ -81,7 +79,7 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
   const [fontSize, setFontSize] = useState(17)
   const [brightness, setBrightness] = useState(100)
   const touchStartX = useRef(null)
-  const contentRef = useRef(null)
+  const scrollContainerRef = useRef(null)
   const t = THEMES[theme]
 
   useEffect(() => { fetchBook() }, [])
@@ -90,6 +88,10 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
     if (pages.length > 0) {
       const data = JSON.parse(localStorage.getItem(`book_${book.id}`) || '{}')
       localStorage.setItem(`book_${book.id}`, JSON.stringify({ ...data, currentPage }))
+      // Reset scroll to top
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0
+      }
     }
   }, [currentPage])
 
@@ -123,9 +125,6 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
       setCurrentPage(p => dir === 'next' ? p + 1 : p - 1)
       setAnimDir(null)
       setAnimating(false)
-      if (contentRef.current) contentRef.current.scrollTop = 0
-      document.documentElement.scrollTop = 0
-      document.body.scrollTop = 0
     }, 250)
   }
 
@@ -169,15 +168,18 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
 
   return (
     <div style={{
-      minHeight: '100vh', background: t.bg,
-      position: 'relative', overflow: 'hidden',
+      height: '100vh',
+      background: t.bg,
+      position: 'relative',
+      overflow: 'hidden',
       filter: `brightness(${brightness}%)`
     }}>
 
+      {/* Top Bar */}
       {showUI && (
         <div style={{
-          position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)',
-          width: '100%', maxWidth: 430, padding: '48px 20px 12px',
+          position: 'absolute', top: 0, left: 0, right: 0,
+          padding: '48px 20px 12px',
           background: `linear-gradient(${t.bg} 70%, transparent)`,
           zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           filter: `brightness(${100 / brightness * 100}%)`
@@ -202,9 +204,10 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         </div>
       )}
 
+      {/* Search Panel */}
       {showSearch && (
         <div style={{
-          position: 'fixed', top: 110, left: '50%', transform: 'translateX(-50%)',
+          position: 'absolute', top: 110, left: '50%', transform: 'translateX(-50%)',
           width: '90%', maxWidth: 390, zIndex: 20,
           background: theme === 'night' ? '#1A1410' : t.bg,
           border: `1px solid ${t.border}`, borderRadius: 14, padding: 16,
@@ -235,9 +238,10 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         </div>
       )}
 
+      {/* Settings Panel */}
       {showSettings && (
         <div style={{
-          position: 'fixed', top: 110, left: '50%', transform: 'translateX(-50%)',
+          position: 'absolute', top: 110, left: '50%', transform: 'translateX(-50%)',
           width: '90%', maxWidth: 390, zIndex: 20,
           background: theme === 'night' ? '#1A1410' : t.bg,
           border: `1px solid ${t.border}`, borderRadius: 16, padding: 20,
@@ -288,12 +292,19 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         </div>
       )}
 
+      {/* Scrollable Content Container */}
       <div
-        ref={contentRef}
+        ref={scrollContainerRef}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClick={() => { if (!showSearch && !showSettings) setShowUI(!showUI) }}
-        style={{ padding: '110px 28px 130px', maxWidth: 430, margin: '0 auto', cursor: 'pointer', minHeight: '100vh' }}
+        style={{
+          height: '100vh',
+          overflowY: 'auto',
+          padding: '110px 28px 130px',
+          cursor: 'pointer',
+          WebkitOverflowScrolling: 'touch',
+        }}
       >
         {loading && (
           <div style={{ textAlign: 'center', paddingTop: 100 }}>
@@ -322,20 +333,26 @@ export default function ReaderScreen({ book, navigate, globalTheme }) {
         {!loading && !error && !expired && pages.length > 0 && (
           <div style={{
             ...getPageStyle(),
-            fontSize: fontSize, lineHeight: 1.95, color: t.text,
-            fontFamily: 'var(--font-body)', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+            fontSize: fontSize,
+            lineHeight: 1.95,
+            color: t.text,
+            fontFamily: 'var(--font-body)',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
           }}>
             {pages[currentPage]}
           </div>
         )}
       </div>
 
+      {/* Bottom Bar */}
       {showUI && !loading && !error && pages.length > 0 && (
         <div style={{
-          position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-          width: '100%', maxWidth: 430, padding: '16px 24px 32px',
+          position: 'absolute', bottom: 0, left: 0, right: 0,
+          padding: '16px 24px 32px',
           background: `linear-gradient(transparent, ${t.bg} 40%)`,
-          zIndex: 10, filter: `brightness(${100 / brightness * 100}%)`
+          zIndex: 10,
+          filter: `brightness(${100 / brightness * 100}%)`
         }}>
           <div style={{ height: 1, background: t.border, borderRadius: 1, marginBottom: 16 }}>
             <div style={{ height: '100%', width: `${progress}%`, background: '#C9A96E', borderRadius: 1, transition: 'width 0.3s' }} />
